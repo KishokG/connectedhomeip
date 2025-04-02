@@ -181,6 +181,8 @@ char const * ClusterIdToText(chip::ClusterId id)
         return "WindowCovering";
     case chip::app::Clusters::ClosureControl::Id:
         return "ClosureControl";
+    case chip::app::Clusters::ClosureDimension::Id:
+        return "ClosureDimension";
     case chip::app::Clusters::ServiceArea::Id:
         return "ServiceArea";
     case chip::app::Clusters::PumpConfigurationAndControl::Id:
@@ -281,6 +283,8 @@ char const * ClusterIdToText(chip::ClusterId id)
         return "CommissionerControl";
     case chip::app::Clusters::TlsCertificateManagement::Id:
         return "TlsCertificateManagement";
+    case chip::app::Clusters::TlsClientManagement::Id:
+        return "TlsClientManagement";
     case chip::app::Clusters::UnitTesting::Id:
         return "UnitTesting";
     case chip::app::Clusters::FaultInjection::Id:
@@ -2031,8 +2035,6 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
     case chip::app::Clusters::ScenesManagement::Id: {
         switch (id)
         {
-        case chip::app::Clusters::ScenesManagement::Attributes::LastConfiguredBy::Id:
-            return "LastConfiguredBy";
         case chip::app::Clusters::ScenesManagement::Attributes::SceneTableSize::Id:
             return "SceneTableSize";
         case chip::app::Clusters::ScenesManagement::Attributes::FabricSceneInfo::Id:
@@ -2755,6 +2757,45 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
         case chip::app::Clusters::ClosureControl::Attributes::FeatureMap::Id:
             return "FeatureMap";
         case chip::app::Clusters::ClosureControl::Attributes::ClusterRevision::Id:
+            return "ClusterRevision";
+        default:
+            return "Unknown";
+        }
+    }
+    case chip::app::Clusters::ClosureDimension::Id: {
+        switch (id)
+        {
+        case chip::app::Clusters::ClosureDimension::Attributes::Current::Id:
+            return "Current";
+        case chip::app::Clusters::ClosureDimension::Attributes::Target::Id:
+            return "Target";
+        case chip::app::Clusters::ClosureDimension::Attributes::Resolution::Id:
+            return "Resolution";
+        case chip::app::Clusters::ClosureDimension::Attributes::StepValue::Id:
+            return "StepValue";
+        case chip::app::Clusters::ClosureDimension::Attributes::Unit::Id:
+            return "Unit";
+        case chip::app::Clusters::ClosureDimension::Attributes::UnitRange::Id:
+            return "UnitRange";
+        case chip::app::Clusters::ClosureDimension::Attributes::LimitRange::Id:
+            return "LimitRange";
+        case chip::app::Clusters::ClosureDimension::Attributes::TranslationDirection::Id:
+            return "TranslationDirection";
+        case chip::app::Clusters::ClosureDimension::Attributes::RotationAxis::Id:
+            return "RotationAxis";
+        case chip::app::Clusters::ClosureDimension::Attributes::Overflow::Id:
+            return "Overflow";
+        case chip::app::Clusters::ClosureDimension::Attributes::ModulationType::Id:
+            return "ModulationType";
+        case chip::app::Clusters::ClosureDimension::Attributes::GeneratedCommandList::Id:
+            return "GeneratedCommandList";
+        case chip::app::Clusters::ClosureDimension::Attributes::AcceptedCommandList::Id:
+            return "AcceptedCommandList";
+        case chip::app::Clusters::ClosureDimension::Attributes::AttributeList::Id:
+            return "AttributeList";
+        case chip::app::Clusters::ClosureDimension::Attributes::FeatureMap::Id:
+            return "FeatureMap";
+        case chip::app::Clusters::ClosureDimension::Attributes::ClusterRevision::Id:
             return "ClusterRevision";
         default:
             return "Unknown";
@@ -4411,8 +4452,8 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
         {
         case chip::app::Clusters::Chime::Attributes::InstalledChimeSounds::Id:
             return "InstalledChimeSounds";
-        case chip::app::Clusters::Chime::Attributes::ActiveChimeID::Id:
-            return "ActiveChimeID";
+        case chip::app::Clusters::Chime::Attributes::SelectedChime::Id:
+            return "SelectedChime";
         case chip::app::Clusters::Chime::Attributes::Enabled::Id:
             return "Enabled";
         case chip::app::Clusters::Chime::Attributes::GeneratedCommandList::Id:
@@ -4474,12 +4515,12 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
         {
         case chip::app::Clusters::TlsCertificateManagement::Attributes::MaxRootCertificates::Id:
             return "MaxRootCertificates";
-        case chip::app::Clusters::TlsCertificateManagement::Attributes::CurrentRootCertificates::Id:
-            return "CurrentRootCertificates";
+        case chip::app::Clusters::TlsCertificateManagement::Attributes::ProvisionedRootCertificates::Id:
+            return "ProvisionedRootCertificates";
         case chip::app::Clusters::TlsCertificateManagement::Attributes::MaxClientCertificates::Id:
             return "MaxClientCertificates";
-        case chip::app::Clusters::TlsCertificateManagement::Attributes::CurrentClientCertificates::Id:
-            return "CurrentClientCertificates";
+        case chip::app::Clusters::TlsCertificateManagement::Attributes::ProvisionedClientCertificates::Id:
+            return "ProvisionedClientCertificates";
         case chip::app::Clusters::TlsCertificateManagement::Attributes::GeneratedCommandList::Id:
             return "GeneratedCommandList";
         case chip::app::Clusters::TlsCertificateManagement::Attributes::AcceptedCommandList::Id:
@@ -4489,6 +4530,27 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
         case chip::app::Clusters::TlsCertificateManagement::Attributes::FeatureMap::Id:
             return "FeatureMap";
         case chip::app::Clusters::TlsCertificateManagement::Attributes::ClusterRevision::Id:
+            return "ClusterRevision";
+        default:
+            return "Unknown";
+        }
+    }
+    case chip::app::Clusters::TlsClientManagement::Id: {
+        switch (id)
+        {
+        case chip::app::Clusters::TlsClientManagement::Attributes::MaxProvisioned::Id:
+            return "MaxProvisioned";
+        case chip::app::Clusters::TlsClientManagement::Attributes::ProvisionedEndpoints::Id:
+            return "ProvisionedEndpoints";
+        case chip::app::Clusters::TlsClientManagement::Attributes::GeneratedCommandList::Id:
+            return "GeneratedCommandList";
+        case chip::app::Clusters::TlsClientManagement::Attributes::AcceptedCommandList::Id:
+            return "AcceptedCommandList";
+        case chip::app::Clusters::TlsClientManagement::Attributes::AttributeList::Id:
+            return "AttributeList";
+        case chip::app::Clusters::TlsClientManagement::Attributes::FeatureMap::Id:
+            return "FeatureMap";
+        case chip::app::Clusters::TlsClientManagement::Attributes::ClusterRevision::Id:
             return "ClusterRevision";
         default:
             return "Unknown";
@@ -5031,10 +5093,10 @@ char const * AcceptedCommandIdToText(chip::ClusterId cluster, chip::CommandId id
             return "RemoveFabric";
         case chip::app::Clusters::OperationalCredentials::Commands::AddTrustedRootCertificate::Id:
             return "AddTrustedRootCertificate";
-        case chip::app::Clusters::OperationalCredentials::Commands::SetVidVerificationStatement::Id:
-            return "SetVidVerificationStatement";
-        case chip::app::Clusters::OperationalCredentials::Commands::SignVidVerificationRequest::Id:
-            return "SignVidVerificationRequest";
+        case chip::app::Clusters::OperationalCredentials::Commands::SetVIDVerificationStatement::Id:
+            return "SetVIDVerificationStatement";
+        case chip::app::Clusters::OperationalCredentials::Commands::SignVIDVerificationRequest::Id:
+            return "SignVIDVerificationRequest";
         default:
             return "Unknown";
         }
@@ -5484,6 +5546,17 @@ char const * AcceptedCommandIdToText(chip::ClusterId cluster, chip::CommandId id
             return "ConfigureFallback";
         case chip::app::Clusters::ClosureControl::Commands::CancelFallback::Id:
             return "CancelFallback";
+        default:
+            return "Unknown";
+        }
+    }
+    case chip::app::Clusters::ClosureDimension::Id: {
+        switch (id)
+        {
+        case chip::app::Clusters::ClosureDimension::Commands::SetTarget::Id:
+            return "SetTarget";
+        case chip::app::Clusters::ClosureDimension::Commands::Step::Id:
+            return "Step";
         default:
             return "Unknown";
         }
@@ -5950,6 +6023,19 @@ char const * AcceptedCommandIdToText(chip::ClusterId cluster, chip::CommandId id
             return "Unknown";
         }
     }
+    case chip::app::Clusters::TlsClientManagement::Id: {
+        switch (id)
+        {
+        case chip::app::Clusters::TlsClientManagement::Commands::ProvisionEndpoint::Id:
+            return "ProvisionEndpoint";
+        case chip::app::Clusters::TlsClientManagement::Commands::FindEndpoint::Id:
+            return "FindEndpoint";
+        case chip::app::Clusters::TlsClientManagement::Commands::RemoveEndpoint::Id:
+            return "RemoveEndpoint";
+        default:
+            return "Unknown";
+        }
+    }
     case chip::app::Clusters::UnitTesting::Id: {
         switch (id)
         {
@@ -6147,8 +6233,8 @@ char const * GeneratedCommandIdToText(chip::ClusterId cluster, chip::CommandId i
             return "CSRResponse";
         case chip::app::Clusters::OperationalCredentials::Commands::NOCResponse::Id:
             return "NOCResponse";
-        case chip::app::Clusters::OperationalCredentials::Commands::SignVidVerificationResponse::Id:
-            return "SignVidVerificationResponse";
+        case chip::app::Clusters::OperationalCredentials::Commands::SignVIDVerificationResponse::Id:
+            return "SignVIDVerificationResponse";
         default:
             return "Unknown";
         }
@@ -6532,12 +6618,21 @@ char const * GeneratedCommandIdToText(chip::ClusterId cluster, chip::CommandId i
             return "LookupRootCertificateResponse";
         case chip::app::Clusters::TlsCertificateManagement::Commands::TLSClientCSRResponse::Id:
             return "TLSClientCSRResponse";
-        case chip::app::Clusters::TlsCertificateManagement::Commands::ProvisionClientCertificateResponse::Id:
-            return "ProvisionClientCertificateResponse";
         case chip::app::Clusters::TlsCertificateManagement::Commands::FindClientCertificateResponse::Id:
             return "FindClientCertificateResponse";
         case chip::app::Clusters::TlsCertificateManagement::Commands::LookupClientCertificateResponse::Id:
             return "LookupClientCertificateResponse";
+        default:
+            return "Unknown";
+        }
+    }
+    case chip::app::Clusters::TlsClientManagement::Id: {
+        switch (id)
+        {
+        case chip::app::Clusters::TlsClientManagement::Commands::ProvisionEndpointResponse::Id:
+            return "ProvisionEndpointResponse";
+        case chip::app::Clusters::TlsClientManagement::Commands::FindEndpointResponse::Id:
+            return "FindEndpointResponse";
         default:
             return "Unknown";
         }

@@ -24,6 +24,7 @@
         "CHIME_CLUSTER": [],
         "CLIENT_MONITORING_CLUSTER": [],
         "CLOSURE_CONTROL_CLUSTER": [],
+        "CLOSURE_DIMENSION_CLUSTER": [],
         "COLOR_CONTROL_CLUSTER": [],
         "COMMISSIONER_CONTROL_CLUSTER": [],
         "COMMISSIONING_CLUSTER": [],
@@ -125,6 +126,7 @@
         "TIME_SYNCHRONIZATION_CLUSTER": [],
         "TIMER_CLUSTER": [],
         "TLS_CERTIFICATE_MANAGEMENT_CLUSTER": [],
+        "TLS_CLIENT_MANAGEMENT_CLUSTER": [],
         "TRUSTED_ROOT_CERTIFICATES_CLUSTER": [],
         "UNIT_LOCALIZATION_CLUSTER": [],
         "UNIT_TESTING_CLUSTER": [],
@@ -168,7 +170,9 @@
             "bridged-device-basic-information-server"
         ],
         "CAMERA_AV_SETTINGS_USER_LEVEL_MANAGEMENT_CLUSTER": [],
-        "CAMERA_AV_STREAM_MANAGEMENT_CLUSTER": [],
+        "CAMERA_AV_STREAM_MANAGEMENT_CLUSTER": [
+            "camera-av-stream-management-server"
+        ],
         "CARBON_DIOXIDE_CONCENTRATION_MEASUREMENT_CLUSTER": [
             "concentration-measurement-server"
         ],
@@ -178,6 +182,7 @@
         "CHANNEL_CLUSTER": ["channel-server"],
         "CHIME_CLUSTER": ["chime-server"],
         "CLOSURE_CONTROL_CLUSTER": ["closure-control-server"],
+        "CLOSURE_DIMENSION_CLUSTER": [],
         "COLOR_CONTROL_CLUSTER": ["color-control-server"],
         "COMMISSIONER_CONTROL_CLUSTER": ["commissioner-control-server"],
         "COMMISSIONING_CLUSTER": [],
@@ -311,6 +316,7 @@
         "TIME_SYNCHRONIZATION_CLUSTER": ["time-synchronization-server"],
         "TIMER_CLUSTER": ["timer-server"],
         "TLS_CERTIFICATE_MANAGEMENT_CLUSTER": [],
+        "TLS_CLIENT_MANAGEMENT_CLUSTER": [],
         "TVOC_CONCENTRATION_MEASUREMENT_CLUSTER": [
             "concentration-measurement-server"
         ],
@@ -323,8 +329,12 @@
         "WAKE_ON_LAN_CLUSTER": ["wake-on-lan-server"],
         "LAUNDRY_WASHER_CONTROLS_CLUSTER": ["laundry-washer-controls-server"],
         "LAUNDRY_DRYER_CONTROLS_CLUSTER": ["laundry-dryer-controls-server"],
-        "WEB_RTC_TRANSPORT_PROVIDER_CLUSTER": [],
-        "WEB_RTC_TRANSPORT_REQUESTOR_CLUSTER": [],
+        "WEB_RTC_TRANSPORT_PROVIDER_CLUSTER": [
+            "webrtc-transport-provider-server"
+        ],
+        "WEB_RTC_TRANSPORT_REQUESTOR_CLUSTER": [
+            "webrtc-transport-requestor-server"
+        ],
         "WIFI_NETWORK_DIAGNOSTICS_CLUSTER": ["wifi-network-diagnostics-server"],
         "WIFI_NETWORK_MANAGEMENT_CLUSTER": ["wifi-network-management-server"],
         "WINDOW_COVERING_CLUSTER": ["window-covering-server"],

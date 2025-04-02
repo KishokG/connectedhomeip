@@ -758,6 +758,15 @@ static BOOL CommandNeedsTimedInvokeInClosureControlCluster(AttributeId aAttribut
     }
     }
 }
+static BOOL CommandNeedsTimedInvokeInClosureDimensionCluster(AttributeId aAttributeId)
+{
+    using namespace Clusters::ClosureDimension;
+    switch (aAttributeId) {
+    default: {
+        return NO;
+    }
+    }
+}
 static BOOL CommandNeedsTimedInvokeInServiceAreaCluster(AttributeId aAttributeId)
 {
     using namespace Clusters::ServiceArea;
@@ -1223,6 +1232,15 @@ static BOOL CommandNeedsTimedInvokeInTLSCertificateManagementCluster(AttributeId
     }
     }
 }
+static BOOL CommandNeedsTimedInvokeInTLSClientManagementCluster(AttributeId aAttributeId)
+{
+    using namespace Clusters::TlsClientManagement;
+    switch (aAttributeId) {
+    default: {
+        return NO;
+    }
+    }
+}
 static BOOL CommandNeedsTimedInvokeInUnitTestingCluster(AttributeId aAttributeId)
 {
     using namespace Clusters::UnitTesting;
@@ -1476,6 +1494,9 @@ BOOL MTRCommandNeedsTimedInvoke(NSNumber * _Nonnull aClusterID, NSNumber * _Nonn
     case Clusters::ClosureControl::Id: {
         return CommandNeedsTimedInvokeInClosureControlCluster(commandID);
     }
+    case Clusters::ClosureDimension::Id: {
+        return CommandNeedsTimedInvokeInClosureDimensionCluster(commandID);
+    }
     case Clusters::ServiceArea::Id: {
         return CommandNeedsTimedInvokeInServiceAreaCluster(commandID);
     }
@@ -1625,6 +1646,9 @@ BOOL MTRCommandNeedsTimedInvoke(NSNumber * _Nonnull aClusterID, NSNumber * _Nonn
     }
     case Clusters::TlsCertificateManagement::Id: {
         return CommandNeedsTimedInvokeInTLSCertificateManagementCluster(commandID);
+    }
+    case Clusters::TlsClientManagement::Id: {
+        return CommandNeedsTimedInvokeInTLSClientManagementCluster(commandID);
     }
     case Clusters::UnitTesting::Id: {
         return CommandNeedsTimedInvokeInUnitTestingCluster(commandID);

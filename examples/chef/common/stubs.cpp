@@ -85,6 +85,10 @@ const Clusters::Descriptor::Structs::SemanticTagStruct::Type freezerTagList[]   
 #include "window-covering/chef-window-covering.h"
 #endif // MATTER_DM_PLUGIN_WINDOW_COVERING_SERVER
 
+#ifdef MATTER_DM_PLUGIN_OVEN_MODE_SERVER
+#include "oven-mode/chef-oven-mode.h"
+#endif // MATTER_DM_PLUGIN_OVEN_MODE_SERVER
+
 Protocols::InteractionModel::Status emberAfExternalAttributeReadCallback(EndpointId endpoint, ClusterId clusterId,
                                                                          const EmberAfAttributeMetadata * attributeMetadata,
                                                                          uint8_t * buffer, uint16_t maxReadLength)
@@ -362,8 +366,13 @@ void ApplicationInit()
 
 #ifdef MATTER_DM_PLUGIN_WINDOW_COVERING_SERVER
     ChipLogProgress(NotSpecified, "Initializing WindowCovering cluster delegate.");
-    InitChefWindowCoveringCluster();
+    ChefWindowCovering::InitChefWindowCoveringCluster();
 #endif // MATTER_DM_PLUGIN_WINDOW_COVERING_SERVER
+
+#ifdef MATTER_DM_PLUGIN_OVEN_MODE_SERVER
+    ChipLogProgress(NotSpecified, "Initializing OvenMode cluster.");
+    ChefOvenMode::InitChefOvenModeCluster();
+#endif // MATTER_DM_PLUGIN_OVEN_MODE_SERVER
 }
 
 void ApplicationShutdown()

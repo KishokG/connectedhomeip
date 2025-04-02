@@ -2442,9 +2442,6 @@ static BOOL AttributeIsSpecifiedInScenesManagementCluster(AttributeId aAttribute
 {
     using namespace Clusters::ScenesManagement;
     switch (aAttributeId) {
-    case Attributes::LastConfiguredBy::Id: {
-        return YES;
-    }
     case Attributes::SceneTableSize::Id: {
         return YES;
     }
@@ -3484,6 +3481,63 @@ static BOOL AttributeIsSpecifiedInClosureControlCluster(AttributeId aAttributeId
         return YES;
     }
     case Attributes::KickoffTimer::Id: {
+        return YES;
+    }
+    case Attributes::GeneratedCommandList::Id: {
+        return YES;
+    }
+    case Attributes::AcceptedCommandList::Id: {
+        return YES;
+    }
+    case Attributes::AttributeList::Id: {
+        return YES;
+    }
+    case Attributes::FeatureMap::Id: {
+        return YES;
+    }
+    case Attributes::ClusterRevision::Id: {
+        return YES;
+    }
+    default: {
+        return NO;
+    }
+    }
+}
+static BOOL AttributeIsSpecifiedInClosureDimensionCluster(AttributeId aAttributeId)
+{
+    using namespace Clusters::ClosureDimension;
+    switch (aAttributeId) {
+    case Attributes::Current::Id: {
+        return YES;
+    }
+    case Attributes::Target::Id: {
+        return YES;
+    }
+    case Attributes::Resolution::Id: {
+        return YES;
+    }
+    case Attributes::StepValue::Id: {
+        return YES;
+    }
+    case Attributes::Unit::Id: {
+        return YES;
+    }
+    case Attributes::UnitRange::Id: {
+        return YES;
+    }
+    case Attributes::LimitRange::Id: {
+        return YES;
+    }
+    case Attributes::TranslationDirection::Id: {
+        return YES;
+    }
+    case Attributes::RotationAxis::Id: {
+        return YES;
+    }
+    case Attributes::Overflow::Id: {
+        return YES;
+    }
+    case Attributes::ModulationType::Id: {
         return YES;
     }
     case Attributes::GeneratedCommandList::Id: {
@@ -5913,7 +5967,7 @@ static BOOL AttributeIsSpecifiedInChimeCluster(AttributeId aAttributeId)
     case Attributes::InstalledChimeSounds::Id: {
         return YES;
     }
-    case Attributes::ActiveChimeID::Id: {
+    case Attributes::SelectedChime::Id: {
         return YES;
     }
     case Attributes::Enabled::Id: {
@@ -6003,13 +6057,43 @@ static BOOL AttributeIsSpecifiedInTLSCertificateManagementCluster(AttributeId aA
     case Attributes::MaxRootCertificates::Id: {
         return YES;
     }
-    case Attributes::CurrentRootCertificates::Id: {
+    case Attributes::ProvisionedRootCertificates::Id: {
         return YES;
     }
     case Attributes::MaxClientCertificates::Id: {
         return YES;
     }
-    case Attributes::CurrentClientCertificates::Id: {
+    case Attributes::ProvisionedClientCertificates::Id: {
+        return YES;
+    }
+    case Attributes::GeneratedCommandList::Id: {
+        return YES;
+    }
+    case Attributes::AcceptedCommandList::Id: {
+        return YES;
+    }
+    case Attributes::AttributeList::Id: {
+        return YES;
+    }
+    case Attributes::FeatureMap::Id: {
+        return YES;
+    }
+    case Attributes::ClusterRevision::Id: {
+        return YES;
+    }
+    default: {
+        return NO;
+    }
+    }
+}
+static BOOL AttributeIsSpecifiedInTLSClientManagementCluster(AttributeId aAttributeId)
+{
+    using namespace Clusters::TlsClientManagement;
+    switch (aAttributeId) {
+    case Attributes::MaxProvisioned::Id: {
+        return YES;
+    }
+    case Attributes::ProvisionedEndpoints::Id: {
         return YES;
     }
     case Attributes::GeneratedCommandList::Id: {
@@ -6579,6 +6663,9 @@ BOOL MTRAttributeIsSpecified(ClusterId aClusterId, AttributeId aAttributeId)
     case Clusters::ClosureControl::Id: {
         return AttributeIsSpecifiedInClosureControlCluster(aAttributeId);
     }
+    case Clusters::ClosureDimension::Id: {
+        return AttributeIsSpecifiedInClosureDimensionCluster(aAttributeId);
+    }
     case Clusters::ServiceArea::Id: {
         return AttributeIsSpecifiedInServiceAreaCluster(aAttributeId);
     }
@@ -6728,6 +6815,9 @@ BOOL MTRAttributeIsSpecified(ClusterId aClusterId, AttributeId aAttributeId)
     }
     case Clusters::TlsCertificateManagement::Id: {
         return AttributeIsSpecifiedInTLSCertificateManagementCluster(aAttributeId);
+    }
+    case Clusters::TlsClientManagement::Id: {
+        return AttributeIsSpecifiedInTLSClientManagementCluster(aAttributeId);
     }
     case Clusters::UnitTesting::Id: {
         return AttributeIsSpecifiedInUnitTestingCluster(aAttributeId);

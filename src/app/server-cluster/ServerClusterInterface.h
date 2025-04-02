@@ -24,6 +24,7 @@
 #include <app/data-model-provider/MetadataList.h>
 #include <app/data-model-provider/MetadataTypes.h>
 #include <app/data-model-provider/OperationTypes.h>
+#include <app/server-cluster/ServerClusterContext.h>
 #include <lib/core/CHIPError.h>
 #include <lib/core/DataModelTypes.h>
 #include <lib/support/BitFlags.h>
@@ -41,6 +42,20 @@ class ServerClusterInterface
 {
 public:
     virtual ~ServerClusterInterface() = default;
+
+    /// Starts up the server cluster interface.
+    ///
+    /// The `context` lifetime must be guaranteed to last
+    /// until `Shutdown` is called:
+    ///
+    /// - You are allowed to take and use a pointer to it until
+    ///   shutdown is called.
+    /// - If context is needed, you SHOULD store a pointer rather
+    ///   than a copy to save RAM usage.
+    virtual CHIP_ERROR Startup(ServerClusterContext & context) = 0;
+
+    /// A shutdown will always be paired with a corresponding Startup.
+    virtual void Shutdown() = 0;
 
     ///////////////////////////////////// Cluster Metadata Support //////////////////////////////////////////////////
 
