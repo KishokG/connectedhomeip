@@ -314,6 +314,8 @@ static auto __attribute__((unused)) EnsureKnownEnumValue(detail::MeasurementType
     case EnumType::kPowerFactor:
     case EnumType::kNeutralCurrent:
     case EnumType::kElectricalEnergy:
+    case EnumType::kReactiveEnergy:
+    case EnumType::kApparentEnergy:
         return val;
     default:
         return EnumType::kUnknownEnumValue;
@@ -349,6 +351,20 @@ static auto __attribute__((unused)) EnsureKnownEnumValue(Globals::PositionTag va
     case EnumType::kMiddle:
     case EnumType::kRow:
     case EnumType::kColumn:
+        return val;
+    default:
+        return EnumType::kUnknownEnumValue;
+    }
+}
+
+static auto __attribute__((unused)) EnsureKnownEnumValue(Globals::PowerThresholdSourceEnum val)
+{
+    using EnumType = Globals::PowerThresholdSourceEnum;
+    switch (val)
+    {
+    case EnumType::kContract:
+    case EnumType::kRegulator:
+    case EnumType::kEquipment:
         return val;
     default:
         return EnumType::kUnknownEnumValue;
@@ -402,6 +418,35 @@ static auto __attribute__((unused)) EnsureKnownEnumValue(detail::StreamUsageEnum
         return EnumType::kUnknownEnumValue;
     }
 }
+static auto __attribute__((unused)) EnsureKnownEnumValue(Globals::TariffPriceTypeEnum val)
+{
+    using EnumType = Globals::TariffPriceTypeEnum;
+    switch (val)
+    {
+    case EnumType::kStandard:
+    case EnumType::kCritical:
+    case EnumType::kVirtual:
+    case EnumType::kIncentive:
+    case EnumType::kIncentiveSignal:
+        return val;
+    default:
+        return EnumType::kUnknownEnumValue;
+    }
+}
+
+static auto __attribute__((unused)) EnsureKnownEnumValue(Globals::TariffUnitEnum val)
+{
+    using EnumType = Globals::TariffUnitEnum;
+    switch (val)
+    {
+    case EnumType::kKWh:
+    case EnumType::kKVAh:
+        return val;
+    default:
+        return EnumType::kUnknownEnumValue;
+    }
+}
+
 static auto __attribute__((unused)) EnsureKnownEnumValue(Globals::TestGlobalEnum val)
 {
     using EnumType = Globals::TestGlobalEnum;
@@ -2719,7 +2764,6 @@ static auto __attribute__((unused)) EnsureKnownEnumValue(ClosureControl::MainSta
     case EnumType::kProtected:
     case EnumType::kDisengaged:
     case EnumType::kSetupRequired:
-    case EnumType::kPendingFallback:
         return val;
     default:
         return EnumType::kUnknownEnumValue;
@@ -2741,22 +2785,9 @@ static auto __attribute__((unused)) EnsureKnownEnumValue(ClosureControl::Positio
         return EnumType::kUnknownEnumValue;
     }
 }
-static auto __attribute__((unused)) EnsureKnownEnumValue(ClosureControl::RestingProcedureEnum val)
+static auto __attribute__((unused)) EnsureKnownEnumValue(ClosureControl::TargetLatchEnum val)
 {
-    using EnumType = ClosureControl::RestingProcedureEnum;
-    switch (val)
-    {
-    case EnumType::kDoNothing:
-    case EnumType::kReturnToFullyOpened:
-    case EnumType::kReturnToFullyClosed:
-        return val;
-    default:
-        return EnumType::kUnknownEnumValue;
-    }
-}
-static auto __attribute__((unused)) EnsureKnownEnumValue(ClosureControl::TagLatchEnum val)
-{
-    using EnumType = ClosureControl::TagLatchEnum;
+    using EnumType = ClosureControl::TargetLatchEnum;
     switch (val)
     {
     case EnumType::kLatch:
@@ -2766,9 +2797,9 @@ static auto __attribute__((unused)) EnsureKnownEnumValue(ClosureControl::TagLatc
         return EnumType::kUnknownEnumValue;
     }
 }
-static auto __attribute__((unused)) EnsureKnownEnumValue(ClosureControl::TagPositionEnum val)
+static auto __attribute__((unused)) EnsureKnownEnumValue(ClosureControl::TargetPositionEnum val)
 {
-    using EnumType = ClosureControl::TagPositionEnum;
+    using EnumType = ClosureControl::TargetPositionEnum;
     switch (val)
     {
     case EnumType::kCloseInFull:
@@ -2776,36 +2807,6 @@ static auto __attribute__((unused)) EnsureKnownEnumValue(ClosureControl::TagPosi
     case EnumType::kPedestrian:
     case EnumType::kVentilation:
     case EnumType::kSignature:
-    case EnumType::kSequenceNextStep:
-    case EnumType::kPedestrianNextStep:
-        return val;
-    default:
-        return EnumType::kUnknownEnumValue;
-    }
-}
-static auto __attribute__((unused)) EnsureKnownEnumValue(ClosureControl::TriggerConditionEnum val)
-{
-    using EnumType = ClosureControl::TriggerConditionEnum;
-    switch (val)
-    {
-    case EnumType::kAfterDelay:
-    case EnumType::kAfterApplicativeTrigger:
-    case EnumType::kAfterDelayOrApplicativeTrigger:
-        return val;
-    default:
-        return EnumType::kUnknownEnumValue;
-    }
-}
-static auto __attribute__((unused)) EnsureKnownEnumValue(ClosureControl::TriggerPositionEnum val)
-{
-    using EnumType = ClosureControl::TriggerPositionEnum;
-    switch (val)
-    {
-    case EnumType::kAtFullyClosed:
-    case EnumType::kAtFullyOpened:
-    case EnumType::kInBetween:
-    case EnumType::kAtVentilation:
-    case EnumType::kAtPedestrian:
         return val;
     default:
         return EnumType::kUnknownEnumValue;
@@ -4061,6 +4062,76 @@ static auto __attribute__((unused)) EnsureKnownEnumValue(PushAvStreamTransport::
     }
 }
 
+static auto __attribute__((unused)) EnsureKnownEnumValue(CommodityTariff::AuxiliaryLoadSettingEnum val)
+{
+    using EnumType = CommodityTariff::AuxiliaryLoadSettingEnum;
+    switch (val)
+    {
+    case EnumType::kOff:
+    case EnumType::kOn:
+    case EnumType::kNone:
+        return val;
+    default:
+        return EnumType::kUnknownEnumValue;
+    }
+}
+static auto __attribute__((unused)) EnsureKnownEnumValue(CommodityTariff::BlockModeEnum val)
+{
+    using EnumType = CommodityTariff::BlockModeEnum;
+    switch (val)
+    {
+    case EnumType::kNoBlock:
+    case EnumType::kCombined:
+    case EnumType::kIndividual:
+        return val;
+    default:
+        return EnumType::kUnknownEnumValue;
+    }
+}
+static auto __attribute__((unused)) EnsureKnownEnumValue(CommodityTariff::DayEntryRandomizationTypeEnum val)
+{
+    using EnumType = CommodityTariff::DayEntryRandomizationTypeEnum;
+    switch (val)
+    {
+    case EnumType::kNone:
+    case EnumType::kFixed:
+    case EnumType::kRandom:
+    case EnumType::kRandomPositive:
+    case EnumType::kRandomNegative:
+        return val;
+    default:
+        return EnumType::kUnknownEnumValue;
+    }
+}
+static auto __attribute__((unused)) EnsureKnownEnumValue(CommodityTariff::DayTypeEnum val)
+{
+    using EnumType = CommodityTariff::DayTypeEnum;
+    switch (val)
+    {
+    case EnumType::kStandard:
+    case EnumType::kHoliday:
+    case EnumType::kDynamic:
+    case EnumType::kEvent:
+        return val;
+    default:
+        return EnumType::kUnknownEnumValue;
+    }
+}
+static auto __attribute__((unused)) EnsureKnownEnumValue(CommodityTariff::PeakPeriodSeverityEnum val)
+{
+    using EnumType = CommodityTariff::PeakPeriodSeverityEnum;
+    switch (val)
+    {
+    case EnumType::kUnused:
+    case EnumType::kLow:
+    case EnumType::kMedium:
+    case EnumType::kHigh:
+        return val;
+    default:
+        return EnumType::kUnknownEnumValue;
+    }
+}
+
 static auto __attribute__((unused)) EnsureKnownEnumValue(TlsClientManagement::TLSEndpointStatusEnum val)
 {
     using EnumType = TlsClientManagement::TLSEndpointStatusEnum;
@@ -4068,6 +4139,20 @@ static auto __attribute__((unused)) EnsureKnownEnumValue(TlsClientManagement::TL
     {
     case EnumType::kProvisioned:
     case EnumType::kInUse:
+        return val;
+    default:
+        return EnumType::kUnknownEnumValue;
+    }
+}
+
+static auto __attribute__((unused)) EnsureKnownEnumValue(MeterIdentification::MeterTypeEnum val)
+{
+    using EnumType = MeterIdentification::MeterTypeEnum;
+    switch (val)
+    {
+    case EnumType::kUtility:
+    case EnumType::kPrivate:
+    case EnumType::kGeneric:
         return val;
     default:
         return EnumType::kUnknownEnumValue;
