@@ -697,8 +697,8 @@ class TC_TSTAT_2_2(MatterBaseTest):
 
         if self.pics_guard(not hasHeatingFeature):
             # Sends SetpointRaise Command Heat Only
-            await self.send_single_cmd(cmd=Clusters.Objects.Thermostat.Commands.SetpointRaiseLower(mode=Clusters.Objects.Thermostat.Enums.SetpointRaiseLowerModeEnum.kHeat, amount=-30), endpoint=endpoint)
-            asserts.assert_equal(status, Status.InvalidCommand)
+            set_point_raise_status = await self.send_single_cmd(cmd=Clusters.Objects.Thermostat.Commands.SetpointRaiseLower(mode=Clusters.Objects.Thermostat.Enums.SetpointRaiseLowerModeEnum.kHeat, amount=-30), endpoint=endpoint)
+            asserts.assert_equal(set_point_raise_status, Status.InvalidCommand)
 
         self.step("14")
 
@@ -727,8 +727,8 @@ class TC_TSTAT_2_2(MatterBaseTest):
 
         if self.pics_guard(not hasCoolingFeature):
             # Test Harness Sends SetpointRaise Command Cool Only
-            await self.send_single_cmd(cmd=Clusters.Objects.Thermostat.Commands.SetpointRaiseLower(mode=Clusters.Objects.Thermostat.Enums.SetpointRaiseLowerModeEnum.kCool, amount=-30), endpoint=endpoint)
-            asserts.assert_equal(status, Status.InvalidCommand)
+            set_point_raise_status = await self.send_single_cmd(cmd=Clusters.Objects.Thermostat.Commands.SetpointRaiseLower(mode=Clusters.Objects.Thermostat.Enums.SetpointRaiseLowerModeEnum.kCool, amount=-30), endpoint=endpoint)
+            asserts.assert_equal(set_point_raise_status, Status.InvalidCommand)
 
         self.step("16")
 
