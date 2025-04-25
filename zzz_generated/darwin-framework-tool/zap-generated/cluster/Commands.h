@@ -15280,6 +15280,7 @@ public:
 |------------------------------------------------------------------------------|
 | Attributes:                                                         |        |
 | * TemperatureUnit                                                   | 0x0000 |
+| * SupportedTemperatureUnits                                         | 0x0001 |
 | * GeneratedCommandList                                              | 0xFFF8 |
 | * AcceptedCommandList                                               | 0xFFF9 |
 | * AttributeList                                                     | 0xFFFB |
@@ -15411,6 +15412,92 @@ public:
         return CHIP_NO_ERROR;
     }
 };
+
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute SupportedTemperatureUnits
+ */
+class ReadUnitLocalizationSupportedTemperatureUnits : public ReadAttribute {
+public:
+    ReadUnitLocalizationSupportedTemperatureUnits()
+        : ReadAttribute("supported-temperature-units")
+    {
+    }
+
+    ~ReadUnitLocalizationSupportedTemperatureUnits()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::UnitLocalization::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::UnitLocalization::Attributes::SupportedTemperatureUnits::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterUnitLocalization alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeSupportedTemperatureUnitsWithCompletion:^(NSArray * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"UnitLocalization.SupportedTemperatureUnits response %@", [value description]);
+            if (error == nil) {
+                RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("UnitLocalization SupportedTemperatureUnits read Error", error);
+                RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeUnitLocalizationSupportedTemperatureUnits : public SubscribeAttribute {
+public:
+    SubscribeAttributeUnitLocalizationSupportedTemperatureUnits()
+        : SubscribeAttribute("supported-temperature-units")
+    {
+    }
+
+    ~SubscribeAttributeUnitLocalizationSupportedTemperatureUnits()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::UnitLocalization::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::UnitLocalization::Attributes::SupportedTemperatureUnits::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterUnitLocalization alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeSupportedTemperatureUnitsWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSArray * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"UnitLocalization.SupportedTemperatureUnits response %@", [value description]);
+                if (error == nil) {
+                    RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
 
 /*
  * Attribute GeneratedCommandList
@@ -72099,7 +72186,6 @@ public:
 |------------------------------------------------------------------------------|
 | Events:                                                             |        |
 | * PriceChange                                                       | 0x0000 |
-| * ForecastChange                                                    | 0x0001 |
 \*----------------------------------------------------------------------------*/
 
 #if MTR_ENABLE_PROVISIONAL
@@ -83227,7 +83313,6 @@ public:
 |------------------------------------------------------------------------------|
 | Events:                                                             |        |
 | * CurrentConditionsChanged                                          | 0x0000 |
-| * ForecastConditionsChanged                                         | 0x0001 |
 \*----------------------------------------------------------------------------*/
 
 #if MTR_ENABLE_PROVISIONAL
@@ -186307,6 +186392,10 @@ void registerClusterUnitLocalization(Commands & commands)
         make_unique<ReadUnitLocalizationTemperatureUnit>(), //
         make_unique<WriteUnitLocalizationTemperatureUnit>(), //
         make_unique<SubscribeAttributeUnitLocalizationTemperatureUnit>(), //
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadUnitLocalizationSupportedTemperatureUnits>(), //
+        make_unique<SubscribeAttributeUnitLocalizationSupportedTemperatureUnits>(), //
+#endif // MTR_ENABLE_PROVISIONAL
         make_unique<ReadUnitLocalizationGeneratedCommandList>(), //
         make_unique<SubscribeAttributeUnitLocalizationGeneratedCommandList>(), //
         make_unique<ReadUnitLocalizationAcceptedCommandList>(), //
