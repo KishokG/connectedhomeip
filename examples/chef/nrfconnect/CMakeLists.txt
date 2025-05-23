@@ -98,6 +98,7 @@ target_sources(app PRIVATE
     ${CHEF}/common/clusters/low-power/LowPowerManager.cpp
     ${CHEF}/common/clusters/media-input/MediaInputManager.cpp
     ${CHEF}/common/clusters/media-playback/MediaPlaybackManager.cpp
+    ${CHEF}/common/clusters/oven-cavity-operational-state/chef-oven-cavity-operational-state.cpp
     ${CHEF}/common/clusters/oven-mode/chef-oven-mode.cpp
     ${CHEF}/common/clusters/refrigerator-and-temperature-controlled-cabinet-mode/tcc-mode.cpp
     ${CHEF}/common/clusters/resource-monitoring/chef-resource-monitoring-delegates.cpp
@@ -138,6 +139,19 @@ set(dir_pw_third_party_nanopb "${CHIP_ROOT}/third_party/nanopb/repo" CACHE STRIN
 add_subdirectory(third_party/connectedhomeip/examples/platform/nrfconnect/pw_sys_io)
 add_subdirectory(third_party/connectedhomeip/third_party/nanopb/repo)
 add_subdirectory(third_party/connectedhomeip/third_party/pigweed/repo)
+
+pw_proto_library(actions_service
+  SOURCES
+    ${CHIP_ROOT}/examples/common/pigweed/protos/actions_service.proto
+  INPUTS
+    ${CHIP_ROOT}/examples/common/pigweed/protos/actions_service.options
+  PREFIX
+  actions_service
+  STRIP_PREFIX
+    ${CHIP_ROOT}/examples/common/pigweed/protos
+  DEPS
+    pw_protobuf.common_proto
+)
 
 pw_proto_library(attributes_service
   SOURCES
@@ -231,6 +245,7 @@ target_include_directories(app PRIVATE
   ../../common/pigweed/nrfconnect)
 
 target_compile_options(app PRIVATE
+                       "-DPW_RPC_ACTIONS_SERVICE=1"
                        "-DPW_RPC_ATTRIBUTE_SERVICE=1"
                        "-DPW_RPC_BOOLEAN_STATE_SERVICE=1"
                        "-DPW_RPC_DESCRIPTOR_SERVICE=1"
@@ -239,6 +254,7 @@ target_compile_options(app PRIVATE
 )
 
 target_link_libraries(app PRIVATE
+  actions_service.nanopb_rpc
   attributes_service.nanopb_rpc
   boolean_state_service.nanopb_rpc
   descriptor_service.nanopb_rpc
