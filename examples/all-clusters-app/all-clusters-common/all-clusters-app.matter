@@ -4400,7 +4400,7 @@ cluster ElectricalPowerMeasurement = 144 {
 
 /** This cluster provides a mechanism for querying data about the electrical energy imported or provided by the server. */
 cluster ElectricalEnergyMeasurement = 145 {
-  revision 1;
+  revision 2;
 
   shared enum MeasurementTypeEnum : enum16 {
     kUnspecified = 0;
@@ -4427,6 +4427,8 @@ cluster ElectricalEnergyMeasurement = 145 {
     kExportedEnergy = 0x2;
     kCumulativeEnergy = 0x4;
     kPeriodicEnergy = 0x8;
+    kApparentEnergy = 0x10;
+    kReactiveEnergy = 0x20;
   }
 
   shared struct MeasurementAccuracyRangeStruct {
@@ -4461,6 +4463,8 @@ cluster ElectricalEnergyMeasurement = 145 {
     optional epoch_s endTimestamp = 2;
     optional systime_ms startSystime = 3;
     optional systime_ms endSystime = 4;
+    optional energy_mvah apparentEnergy = 5;
+    optional energy_mvarh reactiveEnergy = 6;
   }
 
   info event CumulativeEnergyMeasured = 0 {
@@ -6979,6 +6983,19 @@ cluster RadonConcentrationMeasurement = 1071 {
   readonly attribute optional MeasurementUnitEnum measurementUnit = 8;
   readonly attribute MeasurementMediumEnum measurementMedium = 9;
   readonly attribute optional LevelValueEnum levelValue = 10;
+  readonly attribute command_id generatedCommandList[] = 65528;
+  readonly attribute command_id acceptedCommandList[] = 65529;
+  readonly attribute attrib_id attributeList[] = 65531;
+  readonly attribute bitmap32 featureMap = 65532;
+  readonly attribute int16u clusterRevision = 65533;
+}
+
+/** This cluster provides an interface to soil measurement functionality, including configuration and provision of notifications of soil measurements. */
+provisional cluster SoilMeasurement = 1072 {
+  revision 1;
+
+  readonly attribute MeasurementAccuracyStruct soilMoistureMeasurementLimits = 0;
+  readonly attribute nullable percent soilMoistureMeasuredValue = 1;
   readonly attribute command_id generatedCommandList[] = 65528;
   readonly attribute command_id acceptedCommandList[] = 65529;
   readonly attribute attrib_id attributeList[] = 65531;
@@ -9702,6 +9719,16 @@ endpoint 1 {
     callback attribute attributeList;
     callback attribute featureMap;
     ram      attribute clusterRevision default = 3;
+  }
+
+  server cluster SoilMeasurement {
+    callback attribute soilMoistureMeasurementLimits;
+    callback attribute soilMoistureMeasuredValue;
+    callback attribute generatedCommandList;
+    callback attribute acceptedCommandList;
+    callback attribute attributeList;
+    ram      attribute featureMap default = 0;
+    callback attribute clusterRevision;
   }
 
   server cluster WakeOnLan {
