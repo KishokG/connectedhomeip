@@ -7448,6 +7448,18 @@ bool emberAfThermostatClusterSetActivePresetRequestCallback(
     chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
     const chip::app::Clusters::Thermostat::Commands::SetActivePresetRequest::DecodableType & commandData);
 /**
+ * @brief Thermostat Cluster AddThermostatSuggestion Command callback (from client)
+ */
+bool emberAfThermostatClusterAddThermostatSuggestionCallback(
+    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
+    const chip::app::Clusters::Thermostat::Commands::AddThermostatSuggestion::DecodableType & commandData);
+/**
+ * @brief Thermostat Cluster RemoveThermostatSuggestion Command callback (from client)
+ */
+bool emberAfThermostatClusterRemoveThermostatSuggestionCallback(
+    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
+    const chip::app::Clusters::Thermostat::Commands::RemoveThermostatSuggestion::DecodableType & commandData);
+/**
  * @brief Thermostat Cluster AtomicRequest Command callback (from client)
  */
 bool emberAfThermostatClusterAtomicRequestCallback(
@@ -7873,17 +7885,23 @@ bool emberAfZoneManagementClusterUpdateTwoDCartesianZoneCallback(
     chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
     const chip::app::Clusters::ZoneManagement::Commands::UpdateTwoDCartesianZone::DecodableType & commandData);
 /**
- * @brief Zone Management Cluster GetTwoDCartesianZone Command callback (from client)
- */
-bool emberAfZoneManagementClusterGetTwoDCartesianZoneCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::ZoneManagement::Commands::GetTwoDCartesianZone::DecodableType & commandData);
-/**
  * @brief Zone Management Cluster RemoveZone Command callback (from client)
  */
 bool emberAfZoneManagementClusterRemoveZoneCallback(
     chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
     const chip::app::Clusters::ZoneManagement::Commands::RemoveZone::DecodableType & commandData);
+/**
+ * @brief Zone Management Cluster CreateOrUpdateTrigger Command callback (from client)
+ */
+bool emberAfZoneManagementClusterCreateOrUpdateTriggerCallback(
+    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
+    const chip::app::Clusters::ZoneManagement::Commands::CreateOrUpdateTrigger::DecodableType & commandData);
+/**
+ * @brief Zone Management Cluster RemoveTrigger Command callback (from client)
+ */
+bool emberAfZoneManagementClusterRemoveTriggerCallback(
+    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
+    const chip::app::Clusters::ZoneManagement::Commands::RemoveTrigger::DecodableType & commandData);
 /**
  * @brief Push AV Stream Transport Cluster AllocatePushTransport Command callback (from client)
  */
@@ -8089,78 +8107,6 @@ bool emberAfJointFabricAdministratorClusterAnnounceJointFabricAdministratorCallb
     chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
     const chip::app::Clusters::JointFabricAdministrator::Commands::AnnounceJointFabricAdministrator::DecodableType & commandData);
 /**
- * @brief TLS Certificate Management Cluster ProvisionRootCertificate Command callback (from client)
- */
-bool emberAfTlsCertificateManagementClusterProvisionRootCertificateCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::TlsCertificateManagement::Commands::ProvisionRootCertificate::DecodableType & commandData);
-/**
- * @brief TLS Certificate Management Cluster FindRootCertificate Command callback (from client)
- */
-bool emberAfTlsCertificateManagementClusterFindRootCertificateCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::TlsCertificateManagement::Commands::FindRootCertificate::DecodableType & commandData);
-/**
- * @brief TLS Certificate Management Cluster LookupRootCertificate Command callback (from client)
- */
-bool emberAfTlsCertificateManagementClusterLookupRootCertificateCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::TlsCertificateManagement::Commands::LookupRootCertificate::DecodableType & commandData);
-/**
- * @brief TLS Certificate Management Cluster RemoveRootCertificate Command callback (from client)
- */
-bool emberAfTlsCertificateManagementClusterRemoveRootCertificateCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::TlsCertificateManagement::Commands::RemoveRootCertificate::DecodableType & commandData);
-/**
- * @brief TLS Certificate Management Cluster TLSClientCSR Command callback (from client)
- */
-bool emberAfTlsCertificateManagementClusterTLSClientCSRCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::TlsCertificateManagement::Commands::TLSClientCSR::DecodableType & commandData);
-/**
- * @brief TLS Certificate Management Cluster ProvisionClientCertificate Command callback (from client)
- */
-bool emberAfTlsCertificateManagementClusterProvisionClientCertificateCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::TlsCertificateManagement::Commands::ProvisionClientCertificate::DecodableType & commandData);
-/**
- * @brief TLS Certificate Management Cluster FindClientCertificate Command callback (from client)
- */
-bool emberAfTlsCertificateManagementClusterFindClientCertificateCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::TlsCertificateManagement::Commands::FindClientCertificate::DecodableType & commandData);
-/**
- * @brief TLS Certificate Management Cluster LookupClientCertificate Command callback (from client)
- */
-bool emberAfTlsCertificateManagementClusterLookupClientCertificateCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::TlsCertificateManagement::Commands::LookupClientCertificate::DecodableType & commandData);
-/**
- * @brief TLS Certificate Management Cluster RemoveClientCertificate Command callback (from client)
- */
-bool emberAfTlsCertificateManagementClusterRemoveClientCertificateCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::TlsCertificateManagement::Commands::RemoveClientCertificate::DecodableType & commandData);
-/**
- * @brief TLS Client Management Cluster ProvisionEndpoint Command callback (from client)
- */
-bool emberAfTlsClientManagementClusterProvisionEndpointCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::TlsClientManagement::Commands::ProvisionEndpoint::DecodableType & commandData);
-/**
- * @brief TLS Client Management Cluster FindEndpoint Command callback (from client)
- */
-bool emberAfTlsClientManagementClusterFindEndpointCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::TlsClientManagement::Commands::FindEndpoint::DecodableType & commandData);
-/**
- * @brief TLS Client Management Cluster RemoveEndpoint Command callback (from client)
- */
-bool emberAfTlsClientManagementClusterRemoveEndpointCallback(
-    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
-    const chip::app::Clusters::TlsClientManagement::Commands::RemoveEndpoint::DecodableType & commandData);
-/**
  * @brief Unit Testing Cluster Test Command callback (from client)
  */
 bool emberAfUnitTestingClusterTestCallback(chip::app::CommandHandler * commandObj,
@@ -8316,6 +8262,12 @@ bool emberAfUnitTestingClusterStringEchoRequestCallback(
 bool emberAfUnitTestingClusterGlobalEchoRequestCallback(
     chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
     const chip::app::Clusters::UnitTesting::Commands::GlobalEchoRequest::DecodableType & commandData);
+/**
+ * @brief Unit Testing Cluster TestCheckCommandFlags Command callback (from client)
+ */
+bool emberAfUnitTestingClusterTestCheckCommandFlagsCallback(
+    chip::app::CommandHandler * commandObj, const chip::app::ConcreteCommandPath & commandPath,
+    const chip::app::Clusters::UnitTesting::Commands::TestCheckCommandFlags::DecodableType & commandData);
 /**
  * @brief Unit Testing Cluster TestDifferentVendorMeiRequest Command callback (from client)
  */

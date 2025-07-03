@@ -126,6 +126,14 @@ groups:
       teams: [reviewers-google]
     reviews:
       request: 0 # Do not auto-add
+  shared-reviewers-geo:
+    type: optional
+    conditions:
+      - files.include('*')
+    reviewers:
+      teams: [reviewers-geo]
+    reviews:
+      request: 0 # Do not auto-add
   shared-reviewers-grundfos:
     type: optional
     conditions:
@@ -234,6 +242,14 @@ groups:
       - files.include('*')
     reviewers:
       teams: [reviewers-qorvo]
+    reviews:
+      request: 0 # Do not auto-add
+  shared-reviewers-velux:
+    type: optional
+    conditions:
+      - files.include('*')
+    reviewers:
+      teams: [reviewers-velux]
     reviews:
       request: 0 # Do not auto-add
 

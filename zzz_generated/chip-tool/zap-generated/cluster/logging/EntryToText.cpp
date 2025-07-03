@@ -840,6 +840,10 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
             return "TCAcknowledgementsRequired";
         case chip::app::Clusters::GeneralCommissioning::Attributes::TCUpdateDeadline::Id:
             return "TCUpdateDeadline";
+        case chip::app::Clusters::GeneralCommissioning::Attributes::RecoveryIdentifier::Id:
+            return "RecoveryIdentifier";
+        case chip::app::Clusters::GeneralCommissioning::Attributes::NetworkRecoveryReason::Id:
+            return "NetworkRecoveryReason";
         case chip::app::Clusters::GeneralCommissioning::Attributes::GeneratedCommandList::Id:
             return "GeneratedCommandList";
         case chip::app::Clusters::GeneralCommissioning::Attributes::AcceptedCommandList::Id:
@@ -2759,10 +2763,12 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
             return "MainState";
         case chip::app::Clusters::ClosureControl::Attributes::CurrentErrorList::Id:
             return "CurrentErrorList";
-        case chip::app::Clusters::ClosureControl::Attributes::OverallState::Id:
-            return "OverallState";
-        case chip::app::Clusters::ClosureControl::Attributes::OverallTarget::Id:
-            return "OverallTarget";
+        case chip::app::Clusters::ClosureControl::Attributes::OverallCurrentState::Id:
+            return "OverallCurrentState";
+        case chip::app::Clusters::ClosureControl::Attributes::OverallTargetState::Id:
+            return "OverallTargetState";
+        case chip::app::Clusters::ClosureControl::Attributes::LatchControlModes::Id:
+            return "LatchControlModes";
         case chip::app::Clusters::ClosureControl::Attributes::GeneratedCommandList::Id:
             return "GeneratedCommandList";
         case chip::app::Clusters::ClosureControl::Attributes::AcceptedCommandList::Id:
@@ -2782,8 +2788,8 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
         {
         case chip::app::Clusters::ClosureDimension::Attributes::CurrentState::Id:
             return "CurrentState";
-        case chip::app::Clusters::ClosureDimension::Attributes::Target::Id:
-            return "Target";
+        case chip::app::Clusters::ClosureDimension::Attributes::TargetState::Id:
+            return "TargetState";
         case chip::app::Clusters::ClosureDimension::Attributes::Resolution::Id:
             return "Resolution";
         case chip::app::Clusters::ClosureDimension::Attributes::StepValue::Id:
@@ -2802,6 +2808,8 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
             return "Overflow";
         case chip::app::Clusters::ClosureDimension::Attributes::ModulationType::Id:
             return "ModulationType";
+        case chip::app::Clusters::ClosureDimension::Attributes::LatchControlModes::Id:
+            return "LatchControlModes";
         case chip::app::Clusters::ClosureDimension::Attributes::GeneratedCommandList::Id:
             return "GeneratedCommandList";
         case chip::app::Clusters::ClosureDimension::Attributes::AcceptedCommandList::Id:
@@ -3031,6 +3039,14 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
             return "Schedules";
         case chip::app::Clusters::Thermostat::Attributes::SetpointHoldExpiryTimestamp::Id:
             return "SetpointHoldExpiryTimestamp";
+        case chip::app::Clusters::Thermostat::Attributes::MaxThermostatSuggestions::Id:
+            return "MaxThermostatSuggestions";
+        case chip::app::Clusters::Thermostat::Attributes::ThermostatSuggestions::Id:
+            return "ThermostatSuggestions";
+        case chip::app::Clusters::Thermostat::Attributes::CurrentThermostatSuggestion::Id:
+            return "CurrentThermostatSuggestion";
+        case chip::app::Clusters::Thermostat::Attributes::ThermostatSuggestionNotFollowingReason::Id:
+            return "ThermostatSuggestionNotFollowingReason";
         case chip::app::Clusters::Thermostat::Attributes::GeneratedCommandList::Id:
             return "GeneratedCommandList";
         case chip::app::Clusters::Thermostat::Attributes::AcceptedCommandList::Id:
@@ -4266,14 +4282,20 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
     case chip::app::Clusters::ZoneManagement::Id: {
         switch (id)
         {
-        case chip::app::Clusters::ZoneManagement::Attributes::SupportedZoneSources::Id:
-            return "SupportedZoneSources";
+        case chip::app::Clusters::ZoneManagement::Attributes::MaxUserDefinedZones::Id:
+            return "MaxUserDefinedZones";
+        case chip::app::Clusters::ZoneManagement::Attributes::MaxZones::Id:
+            return "MaxZones";
         case chip::app::Clusters::ZoneManagement::Attributes::Zones::Id:
             return "Zones";
         case chip::app::Clusters::ZoneManagement::Attributes::Triggers::Id:
             return "Triggers";
+        case chip::app::Clusters::ZoneManagement::Attributes::SensitivityMax::Id:
+            return "SensitivityMax";
         case chip::app::Clusters::ZoneManagement::Attributes::Sensitivity::Id:
             return "Sensitivity";
+        case chip::app::Clusters::ZoneManagement::Attributes::TwoDCartesianMax::Id:
+            return "TwoDCartesianMax";
         case chip::app::Clusters::ZoneManagement::Attributes::GeneratedCommandList::Id:
             return "GeneratedCommandList";
         case chip::app::Clusters::ZoneManagement::Attributes::AcceptedCommandList::Id:
@@ -4327,8 +4349,8 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
             return "AllocatedAudioStreams";
         case chip::app::Clusters::CameraAvStreamManagement::Attributes::AllocatedSnapshotStreams::Id:
             return "AllocatedSnapshotStreams";
-        case chip::app::Clusters::CameraAvStreamManagement::Attributes::RankedVideoStreamPrioritiesList::Id:
-            return "RankedVideoStreamPrioritiesList";
+        case chip::app::Clusters::CameraAvStreamManagement::Attributes::StreamUsagePriorities::Id:
+            return "StreamUsagePriorities";
         case chip::app::Clusters::CameraAvStreamManagement::Attributes::SoftRecordingPrivacyModeEnabled::Id:
             return "SoftRecordingPrivacyModeEnabled";
         case chip::app::Clusters::CameraAvStreamManagement::Attributes::SoftLivestreamPrivacyModeEnabled::Id:
@@ -4743,8 +4765,8 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
             return "MeteredQuantity";
         case chip::app::Clusters::CommodityMetering::Attributes::MeteredQuantityTimestamp::Id:
             return "MeteredQuantityTimestamp";
-        case chip::app::Clusters::CommodityMetering::Attributes::MeasurementType::Id:
-            return "MeasurementType";
+        case chip::app::Clusters::CommodityMetering::Attributes::TariffUnit::Id:
+            return "TariffUnit";
         case chip::app::Clusters::CommodityMetering::Attributes::GeneratedCommandList::Id:
             return "GeneratedCommandList";
         case chip::app::Clusters::CommodityMetering::Attributes::AcceptedCommandList::Id:
@@ -5776,6 +5798,10 @@ char const * AcceptedCommandIdToText(chip::ClusterId cluster, chip::CommandId id
             return "SetActiveScheduleRequest";
         case chip::app::Clusters::Thermostat::Commands::SetActivePresetRequest::Id:
             return "SetActivePresetRequest";
+        case chip::app::Clusters::Thermostat::Commands::AddThermostatSuggestion::Id:
+            return "AddThermostatSuggestion";
+        case chip::app::Clusters::Thermostat::Commands::RemoveThermostatSuggestion::Id:
+            return "RemoveThermostatSuggestion";
         case chip::app::Clusters::Thermostat::Commands::AtomicRequest::Id:
             return "AtomicRequest";
         default:
@@ -6060,10 +6086,12 @@ char const * AcceptedCommandIdToText(chip::ClusterId cluster, chip::CommandId id
             return "CreateTwoDCartesianZone";
         case chip::app::Clusters::ZoneManagement::Commands::UpdateTwoDCartesianZone::Id:
             return "UpdateTwoDCartesianZone";
-        case chip::app::Clusters::ZoneManagement::Commands::GetTwoDCartesianZone::Id:
-            return "GetTwoDCartesianZone";
         case chip::app::Clusters::ZoneManagement::Commands::RemoveZone::Id:
             return "RemoveZone";
+        case chip::app::Clusters::ZoneManagement::Commands::CreateOrUpdateTrigger::Id:
+            return "CreateOrUpdateTrigger";
+        case chip::app::Clusters::ZoneManagement::Commands::RemoveTrigger::Id:
+            return "RemoveTrigger";
         default:
             return "Unknown";
         }
@@ -6357,6 +6385,8 @@ char const * AcceptedCommandIdToText(chip::ClusterId cluster, chip::CommandId id
             return "StringEchoRequest";
         case chip::app::Clusters::UnitTesting::Commands::GlobalEchoRequest::Id:
             return "GlobalEchoRequest";
+        case chip::app::Clusters::UnitTesting::Commands::TestCheckCommandFlags::Id:
+            return "TestCheckCommandFlags";
         case chip::app::Clusters::UnitTesting::Commands::TestDifferentVendorMeiRequest::Id:
             return "TestDifferentVendorMeiRequest";
         default:
@@ -6711,6 +6741,8 @@ char const * GeneratedCommandIdToText(chip::ClusterId cluster, chip::CommandId i
         {
         case chip::app::Clusters::Thermostat::Commands::GetWeeklyScheduleResponse::Id:
             return "GetWeeklyScheduleResponse";
+        case chip::app::Clusters::Thermostat::Commands::AddThermostatSuggestionResponse::Id:
+            return "AddThermostatSuggestionResponse";
         case chip::app::Clusters::Thermostat::Commands::AtomicResponse::Id:
             return "AtomicResponse";
         default:
@@ -6832,8 +6864,6 @@ char const * GeneratedCommandIdToText(chip::ClusterId cluster, chip::CommandId i
         {
         case chip::app::Clusters::ZoneManagement::Commands::CreateTwoDCartesianZoneResponse::Id:
             return "CreateTwoDCartesianZoneResponse";
-        case chip::app::Clusters::ZoneManagement::Commands::GetTwoDCartesianZoneResponse::Id:
-            return "GetTwoDCartesianZoneResponse";
         default:
             return "Unknown";
         }
