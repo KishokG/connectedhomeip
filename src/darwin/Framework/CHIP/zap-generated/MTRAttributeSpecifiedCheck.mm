@@ -809,6 +809,9 @@ static BOOL AttributeIsSpecifiedInGeneralCommissioningCluster(AttributeId aAttri
     case Attributes::NetworkRecoveryReason::Id: {
         return YES;
     }
+    case Attributes::IsCommissioningWithoutPower::Id: {
+        return YES;
+    }
     case Attributes::GeneratedCommandList::Id: {
         return YES;
     }
@@ -5897,7 +5900,7 @@ static BOOL AttributeIsSpecifiedInCameraAVStreamManagementCluster(AttributeId aA
     case Attributes::NightVisionUsesInfrared::Id: {
         return YES;
     }
-    case Attributes::MinViewport::Id: {
+    case Attributes::MinViewportResolution::Id: {
         return YES;
     }
     case Attributes::RateDistortionTradeOffPoints::Id: {
@@ -6058,6 +6061,9 @@ static BOOL AttributeIsSpecifiedInCameraAVSettingsUserLevelManagementCluster(Att
         return YES;
     }
     case Attributes::PanMax::Id: {
+        return YES;
+    }
+    case Attributes::MovementState::Id: {
         return YES;
     }
     case Attributes::GeneratedCommandList::Id: {
@@ -6559,6 +6565,9 @@ static BOOL AttributeIsSpecifiedInCommodityMeteringCluster(AttributeId aAttribut
     case Attributes::TariffUnit::Id: {
         return YES;
     }
+    case Attributes::MaximumMeteredQuantities::Id: {
+        return YES;
+    }
     case Attributes::GeneratedCommandList::Id: {
         return YES;
     }
@@ -6729,6 +6738,9 @@ static BOOL AttributeIsSpecifiedInUnitTestingCluster(AttributeId aAttributeId)
         return YES;
     }
     case Attributes::GlobalStruct::Id: {
+        return YES;
+    }
+    case Attributes::UnsupportedAttributeRequiringAdminPrivilege::Id: {
         return YES;
     }
     case Attributes::Unsupported::Id: {

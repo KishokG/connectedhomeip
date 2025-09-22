@@ -638,6 +638,26 @@ bool CommandNeedsTimedInvoke(ClusterId aCluster, CommandId aCommand)
             return false;
         }
     }
+    case Clusters::ClosureControl::Id: {
+        switch (aCommand)
+        {
+        case Clusters::ClosureControl::Commands::MoveTo::Id:
+        case Clusters::ClosureControl::Commands::Calibrate::Id:
+            return true;
+        default:
+            return false;
+        }
+    }
+    case Clusters::ClosureDimension::Id: {
+        switch (aCommand)
+        {
+        case Clusters::ClosureDimension::Commands::SetTarget::Id:
+        case Clusters::ClosureDimension::Commands::Step::Id:
+            return true;
+        default:
+            return false;
+        }
+    }
     case Clusters::ThreadBorderRouterManagement::Id: {
         switch (aCommand)
         {
@@ -1384,7 +1404,7 @@ bool CommandIsFabricScoped(ClusterId aCluster, CommandId aCommand)
             return true;
         case Clusters::TlsCertificateManagement::Commands::RemoveRootCertificate::Id:
             return true;
-        case Clusters::TlsCertificateManagement::Commands::TLSClientCSR::Id:
+        case Clusters::TlsCertificateManagement::Commands::ClientCSR::Id:
             return true;
         case Clusters::TlsCertificateManagement::Commands::ProvisionClientCertificate::Id:
             return true;
@@ -1570,12 +1590,12 @@ bool CommandHasLargePayload(ClusterId aCluster, CommandId aCommand)
         return true;
     }
     if ((aCluster == Clusters::TlsCertificateManagement::Id) &&
-        (aCommand == Clusters::TlsCertificateManagement::Commands::TLSClientCSR::Id))
+        (aCommand == Clusters::TlsCertificateManagement::Commands::ClientCSR::Id))
     {
         return true;
     }
     if ((aCluster == Clusters::TlsCertificateManagement::Id) &&
-        (aCommand == Clusters::TlsCertificateManagement::Commands::TLSClientCSRResponse::Id))
+        (aCommand == Clusters::TlsCertificateManagement::Commands::ClientCSRResponse::Id))
     {
         return true;
     }

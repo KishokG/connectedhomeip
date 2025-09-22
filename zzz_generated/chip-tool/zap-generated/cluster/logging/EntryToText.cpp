@@ -844,6 +844,8 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
             return "RecoveryIdentifier";
         case chip::app::Clusters::GeneralCommissioning::Attributes::NetworkRecoveryReason::Id:
             return "NetworkRecoveryReason";
+        case chip::app::Clusters::GeneralCommissioning::Attributes::IsCommissioningWithoutPower::Id:
+            return "IsCommissioningWithoutPower";
         case chip::app::Clusters::GeneralCommissioning::Attributes::GeneratedCommandList::Id:
             return "GeneratedCommandList";
         case chip::app::Clusters::GeneralCommissioning::Attributes::AcceptedCommandList::Id:
@@ -4321,8 +4323,8 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
             return "VideoSensorParams";
         case chip::app::Clusters::CameraAvStreamManagement::Attributes::NightVisionUsesInfrared::Id:
             return "NightVisionUsesInfrared";
-        case chip::app::Clusters::CameraAvStreamManagement::Attributes::MinViewport::Id:
-            return "MinViewport";
+        case chip::app::Clusters::CameraAvStreamManagement::Attributes::MinViewportResolution::Id:
+            return "MinViewportResolution";
         case chip::app::Clusters::CameraAvStreamManagement::Attributes::RateDistortionTradeOffPoints::Id:
             return "RateDistortionTradeOffPoints";
         case chip::app::Clusters::CameraAvStreamManagement::Attributes::MaxContentBufferSize::Id:
@@ -4430,6 +4432,8 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
             return "PanMin";
         case chip::app::Clusters::CameraAvSettingsUserLevelManagement::Attributes::PanMax::Id:
             return "PanMax";
+        case chip::app::Clusters::CameraAvSettingsUserLevelManagement::Attributes::MovementState::Id:
+            return "MovementState";
         case chip::app::Clusters::CameraAvSettingsUserLevelManagement::Attributes::GeneratedCommandList::Id:
             return "GeneratedCommandList";
         case chip::app::Clusters::CameraAvSettingsUserLevelManagement::Attributes::AcceptedCommandList::Id:
@@ -4767,6 +4771,8 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
             return "MeteredQuantityTimestamp";
         case chip::app::Clusters::CommodityMetering::Attributes::TariffUnit::Id:
             return "TariffUnit";
+        case chip::app::Clusters::CommodityMetering::Attributes::MaximumMeteredQuantities::Id:
+            return "MaximumMeteredQuantities";
         case chip::app::Clusters::CommodityMetering::Attributes::GeneratedCommandList::Id:
             return "GeneratedCommandList";
         case chip::app::Clusters::CommodityMetering::Attributes::AcceptedCommandList::Id:
@@ -4882,6 +4888,8 @@ char const * AttributeIdToText(chip::ClusterId cluster, chip::AttributeId id)
             return "GlobalEnum";
         case chip::app::Clusters::UnitTesting::Attributes::GlobalStruct::Id:
             return "GlobalStruct";
+        case chip::app::Clusters::UnitTesting::Attributes::UnsupportedAttributeRequiringAdminPrivilege::Id:
+            return "UnsupportedAttributeRequiringAdminPrivilege";
         case chip::app::Clusters::UnitTesting::Attributes::Unsupported::Id:
             return "Unsupported";
         case chip::app::Clusters::UnitTesting::Attributes::ReadFailureCode::Id:
@@ -6303,8 +6311,8 @@ char const * AcceptedCommandIdToText(chip::ClusterId cluster, chip::CommandId id
             return "LookupRootCertificate";
         case chip::app::Clusters::TlsCertificateManagement::Commands::RemoveRootCertificate::Id:
             return "RemoveRootCertificate";
-        case chip::app::Clusters::TlsCertificateManagement::Commands::TLSClientCSR::Id:
-            return "TLSClientCSR";
+        case chip::app::Clusters::TlsCertificateManagement::Commands::ClientCSR::Id:
+            return "ClientCSR";
         case chip::app::Clusters::TlsCertificateManagement::Commands::ProvisionClientCertificate::Id:
             return "ProvisionClientCertificate";
         case chip::app::Clusters::TlsCertificateManagement::Commands::FindClientCertificate::Id:
@@ -6947,8 +6955,8 @@ char const * GeneratedCommandIdToText(chip::ClusterId cluster, chip::CommandId i
             return "FindRootCertificateResponse";
         case chip::app::Clusters::TlsCertificateManagement::Commands::LookupRootCertificateResponse::Id:
             return "LookupRootCertificateResponse";
-        case chip::app::Clusters::TlsCertificateManagement::Commands::TLSClientCSRResponse::Id:
-            return "TLSClientCSRResponse";
+        case chip::app::Clusters::TlsCertificateManagement::Commands::ClientCSRResponse::Id:
+            return "ClientCSRResponse";
         case chip::app::Clusters::TlsCertificateManagement::Commands::FindClientCertificateResponse::Id:
             return "FindClientCertificateResponse";
         case chip::app::Clusters::TlsCertificateManagement::Commands::LookupClientCertificateResponse::Id:
@@ -7139,8 +7147,22 @@ char const * DeviceTypeIdToText(chip::DeviceTypeId id)
         return "Mounted Dimmable Load Control";
     case 0x00000130:
         return "Joint Fabric Administrator";
+    case 0x00000140:
+        return "Intercom";
+    case 0x00000141:
+        return "Audio Doorbell";
     case 0x00000142:
         return "Camera";
+    case 0x00000143:
+        return "Video Doorbell";
+    case 0x00000144:
+        return "Floodlight Camera";
+    case 0x00000145:
+        return "Snapshot Camera";
+    case 0x00000146:
+        return "Chime";
+    case 0x00000147:
+        return "Camera Controller";
     case 0x00000202:
         return "Window Covering";
     case 0x00000203:
@@ -7151,8 +7173,6 @@ char const * DeviceTypeIdToText(chip::DeviceTypeId id)
         return "Closure Panel";
     case 0x0000023E:
         return "Closure Controller";
-    case 0x00000300:
-        return "Heating/Cooling Unit";
     case 0x00000301:
         return "Thermostat";
     case 0x00000302:

@@ -38,11 +38,39 @@ public:
 
     void OnLocalDescription(std::function<void(const std::string &, const std::string &)> callback);
     void OnIceCandidate(std::function<void(const std::string &, const std::string &)> callback);
+    void OnGatheringComplete(std::function<void()> callback);
+    void OnStateChange(std::function<void(const char *)> callback);
+
+    /* Call to fetch the local session description string. This is used by the
+     * Python binding layer to get the local SDP string with ice candidates
+     * Should be called after setting local/remote SDP and GatheringComplete.
+     */
+    const char * GetLocalSessionDescriptionInternal();
+
+    const char * GetPeerConnectionState();
+    void Disconnect();
 
 private:
     rtc::PeerConnection * mPeerConnection;
     std::function<void(const std::string &, const std::string &)> mLocalDescriptionCallback;
     std::function<void(const std::string &, const std::string &)> mIceCandidateCallback;
+    std::function<void()> mGatheringCompleteCallback;
+    std::function<void(const char *)> mStateChangeCallback;
+
+    std::string mLocalDescription;
+
+    // Local vector to store the ICE Candidate strings coming from the WebRTC stack
+    std::vector<std::string> mLocalCandidates;
+
+    std::shared_ptr<rtc::Track> mTrack;
+    std::shared_ptr<rtc::Track> mAudioTrack;
+
+    // UDP socket for stream forwarding
+    int mRTPSocket      = -1;
+    int mAudioRTPSocket = -1;
+
+    // Close and reset the UDP socket
+    void CloseRTPSocket();
 };
 
 } // namespace webrtc

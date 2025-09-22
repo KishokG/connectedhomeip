@@ -1477,6 +1477,10 @@ NSString * MTRAttributeNameForID(MTRClusterIDType clusterID, MTRAttributeIDType 
             result = @"NetworkRecoveryReason";
             break;
 
+        case MTRAttributeIDTypeClusterGeneralCommissioningAttributeIsCommissioningWithoutPowerID:
+            result = @"IsCommissioningWithoutPower";
+            break;
+
         case MTRAttributeIDTypeClusterGeneralCommissioningAttributeGeneratedCommandListID:
             result = @"GeneratedCommandList";
             break;
@@ -8125,8 +8129,8 @@ NSString * MTRAttributeNameForID(MTRClusterIDType clusterID, MTRAttributeIDType 
             result = @"NightVisionUsesInfrared";
             break;
 
-        case MTRAttributeIDTypeClusterCameraAVStreamManagementAttributeMinViewportID:
-            result = @"MinViewport";
+        case MTRAttributeIDTypeClusterCameraAVStreamManagementAttributeMinViewportResolutionID:
+            result = @"MinViewportResolution";
             break;
 
         case MTRAttributeIDTypeClusterCameraAVStreamManagementAttributeRateDistortionTradeOffPointsID:
@@ -8339,6 +8343,10 @@ NSString * MTRAttributeNameForID(MTRClusterIDType clusterID, MTRAttributeIDType 
 
         case MTRAttributeIDTypeClusterCameraAVSettingsUserLevelManagementAttributePanMaxID:
             result = @"PanMax";
+            break;
+
+        case MTRAttributeIDTypeClusterCameraAVSettingsUserLevelManagementAttributeMovementStateID:
+            result = @"MovementState";
             break;
 
         case MTRAttributeIDTypeClusterCameraAVSettingsUserLevelManagementAttributeGeneratedCommandListID:
@@ -8989,6 +8997,10 @@ NSString * MTRAttributeNameForID(MTRClusterIDType clusterID, MTRAttributeIDType 
             result = @"TariffUnit";
             break;
 
+        case MTRAttributeIDTypeClusterCommodityMeteringAttributeMaximumMeteredQuantitiesID:
+            result = @"MaximumMeteredQuantities";
+            break;
+
         case MTRAttributeIDTypeClusterCommodityMeteringAttributeGeneratedCommandListID:
             result = @"GeneratedCommandList";
             break;
@@ -9215,6 +9227,10 @@ NSString * MTRAttributeNameForID(MTRClusterIDType clusterID, MTRAttributeIDType 
 
         case MTRAttributeIDTypeClusterUnitTestingAttributeGlobalStructID:
             result = @"GlobalStruct";
+            break;
+
+        case MTRAttributeIDTypeClusterUnitTestingAttributeUnsupportedAttributeRequiringAdminPrivilegeID:
+            result = @"UnsupportedAttributeRequiringAdminPrivilege";
             break;
 
         case MTRAttributeIDTypeClusterUnitTestingAttributeUnsupportedID:
@@ -12124,8 +12140,8 @@ NSString * MTRRequestCommandNameForID(MTRClusterIDType clusterID, MTRCommandIDTy
             result = @"RemoveRootCertificate";
             break;
 
-        case MTRCommandIDTypeClusterTLSCertificateManagementCommandTLSClientCSRID:
-            result = @"TLSClientCSR";
+        case MTRCommandIDTypeClusterTLSCertificateManagementCommandClientCSRID:
+            result = @"ClientCSR";
             break;
 
         case MTRCommandIDTypeClusterTLSCertificateManagementCommandProvisionClientCertificateID:
@@ -14018,8 +14034,8 @@ NSString * MTRResponseCommandNameForID(MTRClusterIDType clusterID, MTRCommandIDT
             result = @"LookupRootCertificateResponse";
             break;
 
-        case MTRCommandIDTypeClusterTLSCertificateManagementCommandTLSClientCSRResponseID:
-            result = @"TLSClientCSRResponse";
+        case MTRCommandIDTypeClusterTLSCertificateManagementCommandClientCSRResponseID:
+            result = @"ClientCSRResponse";
             break;
 
         case MTRCommandIDTypeClusterTLSCertificateManagementCommandFindClientCertificateResponseID:
@@ -15451,6 +15467,39 @@ NSString * MTREventNameForID(MTRClusterIDType clusterID, MTREventIDType eventID)
     case MTRClusterIDTypeThermostatID:
 
         switch (eventID) {
+
+            // Cluster Thermostat events
+        case MTREventIDTypeClusterThermostatEventSystemModeChangeID:
+            result = @"SystemModeChange";
+            break;
+
+        case MTREventIDTypeClusterThermostatEventLocalTemperatureChangeID:
+            result = @"LocalTemperatureChange";
+            break;
+
+        case MTREventIDTypeClusterThermostatEventOccupancyChangeID:
+            result = @"OccupancyChange";
+            break;
+
+        case MTREventIDTypeClusterThermostatEventSetpointChangeID:
+            result = @"SetpointChange";
+            break;
+
+        case MTREventIDTypeClusterThermostatEventRunningStateChangeID:
+            result = @"RunningStateChange";
+            break;
+
+        case MTREventIDTypeClusterThermostatEventRunningModeChangeID:
+            result = @"RunningModeChange";
+            break;
+
+        case MTREventIDTypeClusterThermostatEventActiveScheduleChangeID:
+            result = @"ActiveScheduleChange";
+            break;
+
+        case MTREventIDTypeClusterThermostatEventActivePresetChangeID:
+            result = @"ActivePresetChange";
+            break;
 
         default:
             result = [NSString stringWithFormat:@"<Unknown eventID %u>", eventID];

@@ -93,6 +93,7 @@ class HostApp(Enum):
     CAMERA_CONTROLLER = auto()
     JF_CONTROL = auto()
     JF_ADMIN = auto()
+    CLOSURE = auto()
 
     def ExamplePath(self):
         if self == HostApp.ALL_CLUSTERS:
@@ -179,6 +180,8 @@ class HostApp(Enum):
             return 'jf-control-app'
         elif self == HostApp.JF_ADMIN:
             return 'jf-admin-app/linux'
+        elif self == HostApp.CLOSURE:
+            return 'closure-app/linux'
         else:
             raise Exception('Unknown app type: %r' % self)
 
@@ -313,6 +316,9 @@ class HostApp(Enum):
             yield 'jfc-app'
         elif self == HostApp.JF_ADMIN:
             yield 'jfa-app'
+        elif self == HostApp.CLOSURE:
+            yield 'closure-app'
+            yield 'closure-app.map'
         else:
             raise Exception('Unknown app type: %r' % self)
 
@@ -530,7 +536,7 @@ class HostBuilder(GnBuilder):
         elif app == HostApp.PYTHON_BINDINGS:
             self.extra_gn_options.append('enable_rtti=false')
             self.extra_gn_options.append('chip_project_config_include_dirs=["//config/python"]')
-            self.build_command = 'chip-repl'
+            self.build_command = 'matter-repl'
 
         if self.app == HostApp.SIMULATED_APP1:
             self.extra_gn_options.append('chip_tests_zap_config="app1"')

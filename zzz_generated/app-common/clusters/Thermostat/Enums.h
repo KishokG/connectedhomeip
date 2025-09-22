@@ -239,6 +239,8 @@ enum class Feature : uint32_t
     kLocalTemperatureNotExposed  = 0x40,
     kMatterScheduleConfiguration = 0x80,
     kPresets                     = 0x100,
+    kEvents                      = 0x200,
+    kThermostatSuggestions       = 0x400,
 };
 
 // Bitmap for HVACSystemTypeBitmap
@@ -330,6 +332,7 @@ enum class ThermostatSuggestionNotFollowingReasonBitmap : uint16_t
     kVacationMode           = 0x10,
     kTimeOfUseCostSavings   = 0x20,
     kPreCoolingOrPreHeating = 0x40,
+    kConflictingSuggestions = 0x80,
 };
 } // namespace Thermostat
 } // namespace Clusters

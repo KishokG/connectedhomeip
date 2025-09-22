@@ -16255,6 +16255,42 @@ public:
                                      completion:completion];
 }
 
+- (void)readAttributeIsCommissioningWithoutPowerWithCompletion:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completion
+{
+    using TypeInfo = GeneralCommissioning::Attributes::IsCommissioningWithoutPower::TypeInfo;
+    [self.device _readKnownAttributeWithEndpointID:self.endpointID
+                                         clusterID:@(TypeInfo::GetClusterId())
+                                       attributeID:@(TypeInfo::GetAttributeId())
+                                            params:nil
+                                             queue:self.callbackQueue
+                                        completion:completion];
+}
+
+- (void)subscribeAttributeIsCommissioningWithoutPowerWithParams:(MTRSubscribeParams * _Nonnull)params
+                                        subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablished
+                                                  reportHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))reportHandler
+{
+    using TypeInfo = GeneralCommissioning::Attributes::IsCommissioningWithoutPower::TypeInfo;
+    [self.device _subscribeToKnownAttributeWithEndpointID:self.endpointID
+                                                clusterID:@(TypeInfo::GetClusterId())
+                                              attributeID:@(TypeInfo::GetAttributeId())
+                                                   params:params
+                                                    queue:self.callbackQueue
+                                            reportHandler:reportHandler
+                                  subscriptionEstablished:subscriptionEstablished];
+}
+
++ (void)readAttributeIsCommissioningWithoutPowerWithClusterStateCache:(MTRClusterStateCacheContainer *)clusterStateCacheContainer endpoint:(NSNumber *)endpoint queue:(dispatch_queue_t)queue completion:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completion
+{
+    using TypeInfo = GeneralCommissioning::Attributes::IsCommissioningWithoutPower::TypeInfo;
+    [clusterStateCacheContainer
+        _readKnownCachedAttributeWithEndpointID:static_cast<chip::EndpointId>([endpoint unsignedShortValue])
+                                      clusterID:TypeInfo::GetClusterId()
+                                    attributeID:TypeInfo::GetAttributeId()
+                                          queue:queue
+                                     completion:completion];
+}
+
 - (void)readAttributeGeneratedCommandListWithCompletion:(void (^)(NSArray * _Nullable value, NSError * _Nullable error))completion
 {
     using TypeInfo = GeneralCommissioning::Attributes::GeneratedCommandList::TypeInfo;
@@ -58875,6 +58911,9 @@ public:
     };
 
     auto * timedInvokeTimeoutMs = params.timedInvokeTimeoutMs;
+    if (timedInvokeTimeoutMs == nil) {
+        timedInvokeTimeoutMs = @(MTR_DEFAULT_TIMED_INTERACTION_TIMEOUT_MS);
+    }
 
     using RequestType = ClosureControl::Commands::MoveTo::Type;
     [self.device _invokeKnownCommandWithEndpointID:self.endpointID
@@ -58903,6 +58942,9 @@ public:
     };
 
     auto * timedInvokeTimeoutMs = params.timedInvokeTimeoutMs;
+    if (timedInvokeTimeoutMs == nil) {
+        timedInvokeTimeoutMs = @(MTR_DEFAULT_TIMED_INTERACTION_TIMEOUT_MS);
+    }
 
     using RequestType = ClosureControl::Commands::Calibrate::Type;
     [self.device _invokeKnownCommandWithEndpointID:self.endpointID
@@ -59332,6 +59374,9 @@ public:
     };
 
     auto * timedInvokeTimeoutMs = params.timedInvokeTimeoutMs;
+    if (timedInvokeTimeoutMs == nil) {
+        timedInvokeTimeoutMs = @(MTR_DEFAULT_TIMED_INTERACTION_TIMEOUT_MS);
+    }
 
     using RequestType = ClosureDimension::Commands::SetTarget::Type;
     [self.device _invokeKnownCommandWithEndpointID:self.endpointID
@@ -59356,6 +59401,9 @@ public:
     };
 
     auto * timedInvokeTimeoutMs = params.timedInvokeTimeoutMs;
+    if (timedInvokeTimeoutMs == nil) {
+        timedInvokeTimeoutMs = @(MTR_DEFAULT_TIMED_INTERACTION_TIMEOUT_MS);
+    }
 
     using RequestType = ClosureDimension::Commands::Step::Type;
     [self.device _invokeKnownCommandWithEndpointID:self.endpointID
@@ -72102,34 +72150,6 @@ public:
                                         completion:completion];
 }
 
-- (void)writeAttributeWhitePointXWithValue:(NSNumber * _Nonnull)value completion:(MTRStatusCompletion)completion
-{
-    [self writeAttributeWhitePointXWithValue:(NSNumber * _Nonnull) value params:nil completion:completion];
-}
-- (void)writeAttributeWhitePointXWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completion:(MTRStatusCompletion)completion
-{
-    // Make a copy of params before we go async.
-    params = [params copy];
-    value = [value copy];
-
-    auto * bridge = new MTRDefaultSuccessCallbackBridge(self.callbackQueue, ^(id _Nullable ignored, NSError * _Nullable error) { completion(error); }, ^(ExchangeManager & exchangeManager, const SessionHandle & session, DefaultSuccessCallbackType successCb, MTRErrorCallback failureCb, MTRCallbackBridgeBase * bridge) {
-        chip::Optional<uint16_t> timedWriteTimeout;
-        if (params != nil) {
-          if (params.timedWriteTimeout != nil){
-            timedWriteTimeout.SetValue(params.timedWriteTimeout.unsignedShortValue);
-          }
-        }
-
-        ListFreer listFreer;
-        using TypeInfo = ColorControl::Attributes::WhitePointX::TypeInfo;
-        TypeInfo::Type cppValue;
-          cppValue = value.unsignedShortValue;
-
-        chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
-        return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
-    std::move(*bridge).DispatchAction(self.device);
-}
-
 - (void)subscribeAttributeWhitePointXWithParams:(MTRSubscribeParams * _Nonnull)params
                         subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablished
                                   reportHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))reportHandler
@@ -72164,34 +72184,6 @@ public:
                                             params:nil
                                              queue:self.callbackQueue
                                         completion:completion];
-}
-
-- (void)writeAttributeWhitePointYWithValue:(NSNumber * _Nonnull)value completion:(MTRStatusCompletion)completion
-{
-    [self writeAttributeWhitePointYWithValue:(NSNumber * _Nonnull) value params:nil completion:completion];
-}
-- (void)writeAttributeWhitePointYWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completion:(MTRStatusCompletion)completion
-{
-    // Make a copy of params before we go async.
-    params = [params copy];
-    value = [value copy];
-
-    auto * bridge = new MTRDefaultSuccessCallbackBridge(self.callbackQueue, ^(id _Nullable ignored, NSError * _Nullable error) { completion(error); }, ^(ExchangeManager & exchangeManager, const SessionHandle & session, DefaultSuccessCallbackType successCb, MTRErrorCallback failureCb, MTRCallbackBridgeBase * bridge) {
-        chip::Optional<uint16_t> timedWriteTimeout;
-        if (params != nil) {
-          if (params.timedWriteTimeout != nil){
-            timedWriteTimeout.SetValue(params.timedWriteTimeout.unsignedShortValue);
-          }
-        }
-
-        ListFreer listFreer;
-        using TypeInfo = ColorControl::Attributes::WhitePointY::TypeInfo;
-        TypeInfo::Type cppValue;
-          cppValue = value.unsignedShortValue;
-
-        chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
-        return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
-    std::move(*bridge).DispatchAction(self.device);
 }
 
 - (void)subscribeAttributeWhitePointYWithParams:(MTRSubscribeParams * _Nonnull)params
@@ -72230,34 +72222,6 @@ public:
                                         completion:completion];
 }
 
-- (void)writeAttributeColorPointRXWithValue:(NSNumber * _Nonnull)value completion:(MTRStatusCompletion)completion
-{
-    [self writeAttributeColorPointRXWithValue:(NSNumber * _Nonnull) value params:nil completion:completion];
-}
-- (void)writeAttributeColorPointRXWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completion:(MTRStatusCompletion)completion
-{
-    // Make a copy of params before we go async.
-    params = [params copy];
-    value = [value copy];
-
-    auto * bridge = new MTRDefaultSuccessCallbackBridge(self.callbackQueue, ^(id _Nullable ignored, NSError * _Nullable error) { completion(error); }, ^(ExchangeManager & exchangeManager, const SessionHandle & session, DefaultSuccessCallbackType successCb, MTRErrorCallback failureCb, MTRCallbackBridgeBase * bridge) {
-        chip::Optional<uint16_t> timedWriteTimeout;
-        if (params != nil) {
-          if (params.timedWriteTimeout != nil){
-            timedWriteTimeout.SetValue(params.timedWriteTimeout.unsignedShortValue);
-          }
-        }
-
-        ListFreer listFreer;
-        using TypeInfo = ColorControl::Attributes::ColorPointRX::TypeInfo;
-        TypeInfo::Type cppValue;
-          cppValue = value.unsignedShortValue;
-
-        chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
-        return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
-    std::move(*bridge).DispatchAction(self.device);
-}
-
 - (void)subscribeAttributeColorPointRXWithParams:(MTRSubscribeParams * _Nonnull)params
                          subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablished
                                    reportHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))reportHandler
@@ -72292,34 +72256,6 @@ public:
                                             params:nil
                                              queue:self.callbackQueue
                                         completion:completion];
-}
-
-- (void)writeAttributeColorPointRYWithValue:(NSNumber * _Nonnull)value completion:(MTRStatusCompletion)completion
-{
-    [self writeAttributeColorPointRYWithValue:(NSNumber * _Nonnull) value params:nil completion:completion];
-}
-- (void)writeAttributeColorPointRYWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completion:(MTRStatusCompletion)completion
-{
-    // Make a copy of params before we go async.
-    params = [params copy];
-    value = [value copy];
-
-    auto * bridge = new MTRDefaultSuccessCallbackBridge(self.callbackQueue, ^(id _Nullable ignored, NSError * _Nullable error) { completion(error); }, ^(ExchangeManager & exchangeManager, const SessionHandle & session, DefaultSuccessCallbackType successCb, MTRErrorCallback failureCb, MTRCallbackBridgeBase * bridge) {
-        chip::Optional<uint16_t> timedWriteTimeout;
-        if (params != nil) {
-          if (params.timedWriteTimeout != nil){
-            timedWriteTimeout.SetValue(params.timedWriteTimeout.unsignedShortValue);
-          }
-        }
-
-        ListFreer listFreer;
-        using TypeInfo = ColorControl::Attributes::ColorPointRY::TypeInfo;
-        TypeInfo::Type cppValue;
-          cppValue = value.unsignedShortValue;
-
-        chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
-        return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
-    std::move(*bridge).DispatchAction(self.device);
 }
 
 - (void)subscribeAttributeColorPointRYWithParams:(MTRSubscribeParams * _Nonnull)params
@@ -72358,39 +72294,6 @@ public:
                                         completion:completion];
 }
 
-- (void)writeAttributeColorPointRIntensityWithValue:(NSNumber * _Nullable)value completion:(MTRStatusCompletion)completion
-{
-    [self writeAttributeColorPointRIntensityWithValue:(NSNumber * _Nullable) value params:nil completion:completion];
-}
-- (void)writeAttributeColorPointRIntensityWithValue:(NSNumber * _Nullable)value params:(MTRWriteParams * _Nullable)params completion:(MTRStatusCompletion)completion
-{
-    // Make a copy of params before we go async.
-    params = [params copy];
-    value = [value copy];
-
-    auto * bridge = new MTRDefaultSuccessCallbackBridge(self.callbackQueue, ^(id _Nullable ignored, NSError * _Nullable error) { completion(error); }, ^(ExchangeManager & exchangeManager, const SessionHandle & session, DefaultSuccessCallbackType successCb, MTRErrorCallback failureCb, MTRCallbackBridgeBase * bridge) {
-        chip::Optional<uint16_t> timedWriteTimeout;
-        if (params != nil) {
-          if (params.timedWriteTimeout != nil){
-            timedWriteTimeout.SetValue(params.timedWriteTimeout.unsignedShortValue);
-          }
-        }
-
-        ListFreer listFreer;
-        using TypeInfo = ColorControl::Attributes::ColorPointRIntensity::TypeInfo;
-        TypeInfo::Type cppValue;
-          if (value == nil) {
-            cppValue.SetNull();
-          } else {
-            auto & nonNullValue_0 = cppValue.SetNonNull();
-              nonNullValue_0 = value.unsignedCharValue;
-  }
-
-        chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
-        return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
-    std::move(*bridge).DispatchAction(self.device);
-}
-
 - (void)subscribeAttributeColorPointRIntensityWithParams:(MTRSubscribeParams * _Nonnull)params
                                  subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablished
                                            reportHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))reportHandler
@@ -72425,34 +72328,6 @@ public:
                                             params:nil
                                              queue:self.callbackQueue
                                         completion:completion];
-}
-
-- (void)writeAttributeColorPointGXWithValue:(NSNumber * _Nonnull)value completion:(MTRStatusCompletion)completion
-{
-    [self writeAttributeColorPointGXWithValue:(NSNumber * _Nonnull) value params:nil completion:completion];
-}
-- (void)writeAttributeColorPointGXWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completion:(MTRStatusCompletion)completion
-{
-    // Make a copy of params before we go async.
-    params = [params copy];
-    value = [value copy];
-
-    auto * bridge = new MTRDefaultSuccessCallbackBridge(self.callbackQueue, ^(id _Nullable ignored, NSError * _Nullable error) { completion(error); }, ^(ExchangeManager & exchangeManager, const SessionHandle & session, DefaultSuccessCallbackType successCb, MTRErrorCallback failureCb, MTRCallbackBridgeBase * bridge) {
-        chip::Optional<uint16_t> timedWriteTimeout;
-        if (params != nil) {
-          if (params.timedWriteTimeout != nil){
-            timedWriteTimeout.SetValue(params.timedWriteTimeout.unsignedShortValue);
-          }
-        }
-
-        ListFreer listFreer;
-        using TypeInfo = ColorControl::Attributes::ColorPointGX::TypeInfo;
-        TypeInfo::Type cppValue;
-          cppValue = value.unsignedShortValue;
-
-        chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
-        return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
-    std::move(*bridge).DispatchAction(self.device);
 }
 
 - (void)subscribeAttributeColorPointGXWithParams:(MTRSubscribeParams * _Nonnull)params
@@ -72491,34 +72366,6 @@ public:
                                         completion:completion];
 }
 
-- (void)writeAttributeColorPointGYWithValue:(NSNumber * _Nonnull)value completion:(MTRStatusCompletion)completion
-{
-    [self writeAttributeColorPointGYWithValue:(NSNumber * _Nonnull) value params:nil completion:completion];
-}
-- (void)writeAttributeColorPointGYWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completion:(MTRStatusCompletion)completion
-{
-    // Make a copy of params before we go async.
-    params = [params copy];
-    value = [value copy];
-
-    auto * bridge = new MTRDefaultSuccessCallbackBridge(self.callbackQueue, ^(id _Nullable ignored, NSError * _Nullable error) { completion(error); }, ^(ExchangeManager & exchangeManager, const SessionHandle & session, DefaultSuccessCallbackType successCb, MTRErrorCallback failureCb, MTRCallbackBridgeBase * bridge) {
-        chip::Optional<uint16_t> timedWriteTimeout;
-        if (params != nil) {
-          if (params.timedWriteTimeout != nil){
-            timedWriteTimeout.SetValue(params.timedWriteTimeout.unsignedShortValue);
-          }
-        }
-
-        ListFreer listFreer;
-        using TypeInfo = ColorControl::Attributes::ColorPointGY::TypeInfo;
-        TypeInfo::Type cppValue;
-          cppValue = value.unsignedShortValue;
-
-        chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
-        return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
-    std::move(*bridge).DispatchAction(self.device);
-}
-
 - (void)subscribeAttributeColorPointGYWithParams:(MTRSubscribeParams * _Nonnull)params
                          subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablished
                                    reportHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))reportHandler
@@ -72553,39 +72400,6 @@ public:
                                             params:nil
                                              queue:self.callbackQueue
                                         completion:completion];
-}
-
-- (void)writeAttributeColorPointGIntensityWithValue:(NSNumber * _Nullable)value completion:(MTRStatusCompletion)completion
-{
-    [self writeAttributeColorPointGIntensityWithValue:(NSNumber * _Nullable) value params:nil completion:completion];
-}
-- (void)writeAttributeColorPointGIntensityWithValue:(NSNumber * _Nullable)value params:(MTRWriteParams * _Nullable)params completion:(MTRStatusCompletion)completion
-{
-    // Make a copy of params before we go async.
-    params = [params copy];
-    value = [value copy];
-
-    auto * bridge = new MTRDefaultSuccessCallbackBridge(self.callbackQueue, ^(id _Nullable ignored, NSError * _Nullable error) { completion(error); }, ^(ExchangeManager & exchangeManager, const SessionHandle & session, DefaultSuccessCallbackType successCb, MTRErrorCallback failureCb, MTRCallbackBridgeBase * bridge) {
-        chip::Optional<uint16_t> timedWriteTimeout;
-        if (params != nil) {
-          if (params.timedWriteTimeout != nil){
-            timedWriteTimeout.SetValue(params.timedWriteTimeout.unsignedShortValue);
-          }
-        }
-
-        ListFreer listFreer;
-        using TypeInfo = ColorControl::Attributes::ColorPointGIntensity::TypeInfo;
-        TypeInfo::Type cppValue;
-          if (value == nil) {
-            cppValue.SetNull();
-          } else {
-            auto & nonNullValue_0 = cppValue.SetNonNull();
-              nonNullValue_0 = value.unsignedCharValue;
-  }
-
-        chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
-        return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
-    std::move(*bridge).DispatchAction(self.device);
 }
 
 - (void)subscribeAttributeColorPointGIntensityWithParams:(MTRSubscribeParams * _Nonnull)params
@@ -72624,34 +72438,6 @@ public:
                                         completion:completion];
 }
 
-- (void)writeAttributeColorPointBXWithValue:(NSNumber * _Nonnull)value completion:(MTRStatusCompletion)completion
-{
-    [self writeAttributeColorPointBXWithValue:(NSNumber * _Nonnull) value params:nil completion:completion];
-}
-- (void)writeAttributeColorPointBXWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completion:(MTRStatusCompletion)completion
-{
-    // Make a copy of params before we go async.
-    params = [params copy];
-    value = [value copy];
-
-    auto * bridge = new MTRDefaultSuccessCallbackBridge(self.callbackQueue, ^(id _Nullable ignored, NSError * _Nullable error) { completion(error); }, ^(ExchangeManager & exchangeManager, const SessionHandle & session, DefaultSuccessCallbackType successCb, MTRErrorCallback failureCb, MTRCallbackBridgeBase * bridge) {
-        chip::Optional<uint16_t> timedWriteTimeout;
-        if (params != nil) {
-          if (params.timedWriteTimeout != nil){
-            timedWriteTimeout.SetValue(params.timedWriteTimeout.unsignedShortValue);
-          }
-        }
-
-        ListFreer listFreer;
-        using TypeInfo = ColorControl::Attributes::ColorPointBX::TypeInfo;
-        TypeInfo::Type cppValue;
-          cppValue = value.unsignedShortValue;
-
-        chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
-        return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
-    std::move(*bridge).DispatchAction(self.device);
-}
-
 - (void)subscribeAttributeColorPointBXWithParams:(MTRSubscribeParams * _Nonnull)params
                          subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablished
                                    reportHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))reportHandler
@@ -72688,34 +72474,6 @@ public:
                                         completion:completion];
 }
 
-- (void)writeAttributeColorPointBYWithValue:(NSNumber * _Nonnull)value completion:(MTRStatusCompletion)completion
-{
-    [self writeAttributeColorPointBYWithValue:(NSNumber * _Nonnull) value params:nil completion:completion];
-}
-- (void)writeAttributeColorPointBYWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completion:(MTRStatusCompletion)completion
-{
-    // Make a copy of params before we go async.
-    params = [params copy];
-    value = [value copy];
-
-    auto * bridge = new MTRDefaultSuccessCallbackBridge(self.callbackQueue, ^(id _Nullable ignored, NSError * _Nullable error) { completion(error); }, ^(ExchangeManager & exchangeManager, const SessionHandle & session, DefaultSuccessCallbackType successCb, MTRErrorCallback failureCb, MTRCallbackBridgeBase * bridge) {
-        chip::Optional<uint16_t> timedWriteTimeout;
-        if (params != nil) {
-          if (params.timedWriteTimeout != nil){
-            timedWriteTimeout.SetValue(params.timedWriteTimeout.unsignedShortValue);
-          }
-        }
-
-        ListFreer listFreer;
-        using TypeInfo = ColorControl::Attributes::ColorPointBY::TypeInfo;
-        TypeInfo::Type cppValue;
-          cppValue = value.unsignedShortValue;
-
-        chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
-        return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
-    std::move(*bridge).DispatchAction(self.device);
-}
-
 - (void)subscribeAttributeColorPointBYWithParams:(MTRSubscribeParams * _Nonnull)params
                          subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablished
                                    reportHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))reportHandler
@@ -72750,39 +72508,6 @@ public:
                                             params:nil
                                              queue:self.callbackQueue
                                         completion:completion];
-}
-
-- (void)writeAttributeColorPointBIntensityWithValue:(NSNumber * _Nullable)value completion:(MTRStatusCompletion)completion
-{
-    [self writeAttributeColorPointBIntensityWithValue:(NSNumber * _Nullable) value params:nil completion:completion];
-}
-- (void)writeAttributeColorPointBIntensityWithValue:(NSNumber * _Nullable)value params:(MTRWriteParams * _Nullable)params completion:(MTRStatusCompletion)completion
-{
-    // Make a copy of params before we go async.
-    params = [params copy];
-    value = [value copy];
-
-    auto * bridge = new MTRDefaultSuccessCallbackBridge(self.callbackQueue, ^(id _Nullable ignored, NSError * _Nullable error) { completion(error); }, ^(ExchangeManager & exchangeManager, const SessionHandle & session, DefaultSuccessCallbackType successCb, MTRErrorCallback failureCb, MTRCallbackBridgeBase * bridge) {
-        chip::Optional<uint16_t> timedWriteTimeout;
-        if (params != nil) {
-          if (params.timedWriteTimeout != nil){
-            timedWriteTimeout.SetValue(params.timedWriteTimeout.unsignedShortValue);
-          }
-        }
-
-        ListFreer listFreer;
-        using TypeInfo = ColorControl::Attributes::ColorPointBIntensity::TypeInfo;
-        TypeInfo::Type cppValue;
-          if (value == nil) {
-            cppValue.SetNull();
-          } else {
-            auto & nonNullValue_0 = cppValue.SetNonNull();
-              nonNullValue_0 = value.unsignedCharValue;
-  }
-
-        chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
-        return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
-    std::move(*bridge).DispatchAction(self.device);
 }
 
 - (void)subscribeAttributeColorPointBIntensityWithParams:(MTRSubscribeParams * _Nonnull)params
@@ -74586,14 +74311,6 @@ public:
                 completionHandler(static_cast<NSNumber *>(value), error);
             }];
 }
-- (void)writeAttributeWhitePointXWithValue:(NSNumber * _Nonnull)value completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeWhitePointXWithValue:value params:nil completion:completionHandler];
-}
-- (void)writeAttributeWhitePointXWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeWhitePointXWithValue:value params:params completion:completionHandler];
-}
 - (void)subscribeAttributeWhitePointXWithMinInterval:(NSNumber * _Nonnull)minInterval maxInterval:(NSNumber * _Nonnull)maxInterval
                                               params:(MTRSubscribeParams * _Nullable)params
                              subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablishedHandler
@@ -74628,14 +74345,6 @@ public:
                 // Cast is safe because subclass does not add any selectors.
                 completionHandler(static_cast<NSNumber *>(value), error);
             }];
-}
-- (void)writeAttributeWhitePointYWithValue:(NSNumber * _Nonnull)value completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeWhitePointYWithValue:value params:nil completion:completionHandler];
-}
-- (void)writeAttributeWhitePointYWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeWhitePointYWithValue:value params:params completion:completionHandler];
 }
 - (void)subscribeAttributeWhitePointYWithMinInterval:(NSNumber * _Nonnull)minInterval maxInterval:(NSNumber * _Nonnull)maxInterval
                                               params:(MTRSubscribeParams * _Nullable)params
@@ -74672,14 +74381,6 @@ public:
                 completionHandler(static_cast<NSNumber *>(value), error);
             }];
 }
-- (void)writeAttributeColorPointRXWithValue:(NSNumber * _Nonnull)value completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointRXWithValue:value params:nil completion:completionHandler];
-}
-- (void)writeAttributeColorPointRXWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointRXWithValue:value params:params completion:completionHandler];
-}
 - (void)subscribeAttributeColorPointRXWithMinInterval:(NSNumber * _Nonnull)minInterval maxInterval:(NSNumber * _Nonnull)maxInterval
                                                params:(MTRSubscribeParams * _Nullable)params
                               subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablishedHandler
@@ -74714,14 +74415,6 @@ public:
                 // Cast is safe because subclass does not add any selectors.
                 completionHandler(static_cast<NSNumber *>(value), error);
             }];
-}
-- (void)writeAttributeColorPointRYWithValue:(NSNumber * _Nonnull)value completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointRYWithValue:value params:nil completion:completionHandler];
-}
-- (void)writeAttributeColorPointRYWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointRYWithValue:value params:params completion:completionHandler];
 }
 - (void)subscribeAttributeColorPointRYWithMinInterval:(NSNumber * _Nonnull)minInterval maxInterval:(NSNumber * _Nonnull)maxInterval
                                                params:(MTRSubscribeParams * _Nullable)params
@@ -74758,14 +74451,6 @@ public:
                 completionHandler(static_cast<NSNumber *>(value), error);
             }];
 }
-- (void)writeAttributeColorPointRIntensityWithValue:(NSNumber * _Nullable)value completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointRIntensityWithValue:value params:nil completion:completionHandler];
-}
-- (void)writeAttributeColorPointRIntensityWithValue:(NSNumber * _Nullable)value params:(MTRWriteParams * _Nullable)params completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointRIntensityWithValue:value params:params completion:completionHandler];
-}
 - (void)subscribeAttributeColorPointRIntensityWithMinInterval:(NSNumber * _Nonnull)minInterval maxInterval:(NSNumber * _Nonnull)maxInterval
                                                        params:(MTRSubscribeParams * _Nullable)params
                                       subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablishedHandler
@@ -74800,14 +74485,6 @@ public:
                 // Cast is safe because subclass does not add any selectors.
                 completionHandler(static_cast<NSNumber *>(value), error);
             }];
-}
-- (void)writeAttributeColorPointGXWithValue:(NSNumber * _Nonnull)value completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointGXWithValue:value params:nil completion:completionHandler];
-}
-- (void)writeAttributeColorPointGXWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointGXWithValue:value params:params completion:completionHandler];
 }
 - (void)subscribeAttributeColorPointGXWithMinInterval:(NSNumber * _Nonnull)minInterval maxInterval:(NSNumber * _Nonnull)maxInterval
                                                params:(MTRSubscribeParams * _Nullable)params
@@ -74844,14 +74521,6 @@ public:
                 completionHandler(static_cast<NSNumber *>(value), error);
             }];
 }
-- (void)writeAttributeColorPointGYWithValue:(NSNumber * _Nonnull)value completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointGYWithValue:value params:nil completion:completionHandler];
-}
-- (void)writeAttributeColorPointGYWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointGYWithValue:value params:params completion:completionHandler];
-}
 - (void)subscribeAttributeColorPointGYWithMinInterval:(NSNumber * _Nonnull)minInterval maxInterval:(NSNumber * _Nonnull)maxInterval
                                                params:(MTRSubscribeParams * _Nullable)params
                               subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablishedHandler
@@ -74886,14 +74555,6 @@ public:
                 // Cast is safe because subclass does not add any selectors.
                 completionHandler(static_cast<NSNumber *>(value), error);
             }];
-}
-- (void)writeAttributeColorPointGIntensityWithValue:(NSNumber * _Nullable)value completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointGIntensityWithValue:value params:nil completion:completionHandler];
-}
-- (void)writeAttributeColorPointGIntensityWithValue:(NSNumber * _Nullable)value params:(MTRWriteParams * _Nullable)params completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointGIntensityWithValue:value params:params completion:completionHandler];
 }
 - (void)subscribeAttributeColorPointGIntensityWithMinInterval:(NSNumber * _Nonnull)minInterval maxInterval:(NSNumber * _Nonnull)maxInterval
                                                        params:(MTRSubscribeParams * _Nullable)params
@@ -74930,14 +74591,6 @@ public:
                 completionHandler(static_cast<NSNumber *>(value), error);
             }];
 }
-- (void)writeAttributeColorPointBXWithValue:(NSNumber * _Nonnull)value completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointBXWithValue:value params:nil completion:completionHandler];
-}
-- (void)writeAttributeColorPointBXWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointBXWithValue:value params:params completion:completionHandler];
-}
 - (void)subscribeAttributeColorPointBXWithMinInterval:(NSNumber * _Nonnull)minInterval maxInterval:(NSNumber * _Nonnull)maxInterval
                                                params:(MTRSubscribeParams * _Nullable)params
                               subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablishedHandler
@@ -74973,14 +74626,6 @@ public:
                 completionHandler(static_cast<NSNumber *>(value), error);
             }];
 }
-- (void)writeAttributeColorPointBYWithValue:(NSNumber * _Nonnull)value completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointBYWithValue:value params:nil completion:completionHandler];
-}
-- (void)writeAttributeColorPointBYWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointBYWithValue:value params:params completion:completionHandler];
-}
 - (void)subscribeAttributeColorPointBYWithMinInterval:(NSNumber * _Nonnull)minInterval maxInterval:(NSNumber * _Nonnull)maxInterval
                                                params:(MTRSubscribeParams * _Nullable)params
                               subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablishedHandler
@@ -75015,14 +74660,6 @@ public:
                 // Cast is safe because subclass does not add any selectors.
                 completionHandler(static_cast<NSNumber *>(value), error);
             }];
-}
-- (void)writeAttributeColorPointBIntensityWithValue:(NSNumber * _Nullable)value completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointBIntensityWithValue:value params:nil completion:completionHandler];
-}
-- (void)writeAttributeColorPointBIntensityWithValue:(NSNumber * _Nullable)value params:(MTRWriteParams * _Nullable)params completionHandler:(MTRStatusCompletion)completionHandler
-{
-    [self writeAttributeColorPointBIntensityWithValue:value params:params completion:completionHandler];
 }
 - (void)subscribeAttributeColorPointBIntensityWithMinInterval:(NSNumber * _Nonnull)minInterval maxInterval:(NSNumber * _Nonnull)maxInterval
                                                        params:(MTRSubscribeParams * _Nullable)params
@@ -99940,9 +99577,9 @@ public:
                                      completion:completion];
 }
 
-- (void)readAttributeMinViewportWithCompletion:(void (^)(MTRCameraAVStreamManagementClusterVideoResolutionStruct * _Nullable value, NSError * _Nullable error))completion
+- (void)readAttributeMinViewportResolutionWithCompletion:(void (^)(MTRCameraAVStreamManagementClusterVideoResolutionStruct * _Nullable value, NSError * _Nullable error))completion
 {
-    using TypeInfo = CameraAvStreamManagement::Attributes::MinViewport::TypeInfo;
+    using TypeInfo = CameraAvStreamManagement::Attributes::MinViewportResolution::TypeInfo;
     [self.device _readKnownAttributeWithEndpointID:self.endpointID
                                          clusterID:@(TypeInfo::GetClusterId())
                                        attributeID:@(TypeInfo::GetAttributeId())
@@ -99951,11 +99588,11 @@ public:
                                         completion:completion];
 }
 
-- (void)subscribeAttributeMinViewportWithParams:(MTRSubscribeParams * _Nonnull)params
-                        subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablished
-                                  reportHandler:(void (^)(MTRCameraAVStreamManagementClusterVideoResolutionStruct * _Nullable value, NSError * _Nullable error))reportHandler
+- (void)subscribeAttributeMinViewportResolutionWithParams:(MTRSubscribeParams * _Nonnull)params
+                                  subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablished
+                                            reportHandler:(void (^)(MTRCameraAVStreamManagementClusterVideoResolutionStruct * _Nullable value, NSError * _Nullable error))reportHandler
 {
-    using TypeInfo = CameraAvStreamManagement::Attributes::MinViewport::TypeInfo;
+    using TypeInfo = CameraAvStreamManagement::Attributes::MinViewportResolution::TypeInfo;
     [self.device _subscribeToKnownAttributeWithEndpointID:self.endpointID
                                                 clusterID:@(TypeInfo::GetClusterId())
                                               attributeID:@(TypeInfo::GetAttributeId())
@@ -99965,9 +99602,9 @@ public:
                                   subscriptionEstablished:subscriptionEstablished];
 }
 
-+ (void)readAttributeMinViewportWithClusterStateCache:(MTRClusterStateCacheContainer *)clusterStateCacheContainer endpoint:(NSNumber *)endpoint queue:(dispatch_queue_t)queue completion:(void (^)(MTRCameraAVStreamManagementClusterVideoResolutionStruct * _Nullable value, NSError * _Nullable error))completion
++ (void)readAttributeMinViewportResolutionWithClusterStateCache:(MTRClusterStateCacheContainer *)clusterStateCacheContainer endpoint:(NSNumber *)endpoint queue:(dispatch_queue_t)queue completion:(void (^)(MTRCameraAVStreamManagementClusterVideoResolutionStruct * _Nullable value, NSError * _Nullable error))completion
 {
-    using TypeInfo = CameraAvStreamManagement::Attributes::MinViewport::TypeInfo;
+    using TypeInfo = CameraAvStreamManagement::Attributes::MinViewportResolution::TypeInfo;
     [clusterStateCacheContainer
         _readKnownCachedAttributeWithEndpointID:static_cast<chip::EndpointId>([endpoint unsignedShortValue])
                                       clusterID:TypeInfo::GetClusterId()
@@ -102464,6 +102101,42 @@ public:
                                      completion:completion];
 }
 
+- (void)readAttributeMovementStateWithCompletion:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completion
+{
+    using TypeInfo = CameraAvSettingsUserLevelManagement::Attributes::MovementState::TypeInfo;
+    [self.device _readKnownAttributeWithEndpointID:self.endpointID
+                                         clusterID:@(TypeInfo::GetClusterId())
+                                       attributeID:@(TypeInfo::GetAttributeId())
+                                            params:nil
+                                             queue:self.callbackQueue
+                                        completion:completion];
+}
+
+- (void)subscribeAttributeMovementStateWithParams:(MTRSubscribeParams * _Nonnull)params
+                          subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablished
+                                    reportHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))reportHandler
+{
+    using TypeInfo = CameraAvSettingsUserLevelManagement::Attributes::MovementState::TypeInfo;
+    [self.device _subscribeToKnownAttributeWithEndpointID:self.endpointID
+                                                clusterID:@(TypeInfo::GetClusterId())
+                                              attributeID:@(TypeInfo::GetAttributeId())
+                                                   params:params
+                                                    queue:self.callbackQueue
+                                            reportHandler:reportHandler
+                                  subscriptionEstablished:subscriptionEstablished];
+}
+
++ (void)readAttributeMovementStateWithClusterStateCache:(MTRClusterStateCacheContainer *)clusterStateCacheContainer endpoint:(NSNumber *)endpoint queue:(dispatch_queue_t)queue completion:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completion
+{
+    using TypeInfo = CameraAvSettingsUserLevelManagement::Attributes::MovementState::TypeInfo;
+    [clusterStateCacheContainer
+        _readKnownCachedAttributeWithEndpointID:static_cast<chip::EndpointId>([endpoint unsignedShortValue])
+                                      clusterID:TypeInfo::GetClusterId()
+                                    attributeID:TypeInfo::GetAttributeId()
+                                          queue:queue
+                                     completion:completion];
+}
+
 - (void)readAttributeGeneratedCommandListWithCompletion:(void (^)(NSArray * _Nullable value, NSError * _Nullable error))completion
 {
     using TypeInfo = CameraAvSettingsUserLevelManagement::Attributes::GeneratedCommandList::TypeInfo;
@@ -103426,11 +103099,7 @@ public:
                                              queue:self.callbackQueue
                                         completion:responseHandler];
 }
-- (void)findTransportWithCompletion:(void (^)(MTRPushAVStreamTransportClusterFindTransportResponseParams * _Nullable data, NSError * _Nullable error))completion
-{
-    [self findTransportWithParams:nil completion:completion];
-}
-- (void)findTransportWithParams:(MTRPushAVStreamTransportClusterFindTransportParams * _Nullable)params completion:(void (^)(MTRPushAVStreamTransportClusterFindTransportResponseParams * _Nullable data, NSError * _Nullable error))completion
+- (void)findTransportWithParams:(MTRPushAVStreamTransportClusterFindTransportParams *)params completion:(void (^)(MTRPushAVStreamTransportClusterFindTransportResponseParams * _Nullable data, NSError * _Nullable error))completion
 {
     if (params == nil) {
         params = [[MTRPushAVStreamTransportClusterFindTransportParams
@@ -107172,10 +106841,10 @@ public:
                                              queue:self.callbackQueue
                                         completion:responseHandler];
 }
-- (void)TLSClientCSRWithParams:(MTRTLSCertificateManagementClusterTLSClientCSRParams *)params completion:(void (^)(MTRTLSCertificateManagementClusterTLSClientCSRResponseParams * _Nullable data, NSError * _Nullable error))completion
+- (void)clientCSRWithParams:(MTRTLSCertificateManagementClusterClientCSRParams *)params completion:(void (^)(MTRTLSCertificateManagementClusterClientCSRResponseParams * _Nullable data, NSError * _Nullable error))completion
 {
     if (params == nil) {
-        params = [[MTRTLSCertificateManagementClusterTLSClientCSRParams
+        params = [[MTRTLSCertificateManagementClusterClientCSRParams
             alloc] init];
     }
 
@@ -107185,14 +106854,14 @@ public:
 
     auto * timedInvokeTimeoutMs = params.timedInvokeTimeoutMs;
 
-    using RequestType = TlsCertificateManagement::Commands::TLSClientCSR::Type;
+    using RequestType = TlsCertificateManagement::Commands::ClientCSR::Type;
     [self.device _invokeKnownCommandWithEndpointID:self.endpointID
                                          clusterID:@(RequestType::GetClusterId())
                                          commandID:@(RequestType::GetCommandId())
                                     commandPayload:params
                                 timedInvokeTimeout:timedInvokeTimeoutMs
                        serverSideProcessingTimeout:params.serverSideProcessingTimeout
-                                     responseClass:MTRTLSCertificateManagementClusterTLSClientCSRResponseParams.class
+                                     responseClass:MTRTLSCertificateManagementClusterClientCSRResponseParams.class
                                              queue:self.callbackQueue
                                         completion:responseHandler];
 }
@@ -108414,6 +108083,42 @@ public:
 + (void)readAttributeTariffUnitWithClusterStateCache:(MTRClusterStateCacheContainer *)clusterStateCacheContainer endpoint:(NSNumber *)endpoint queue:(dispatch_queue_t)queue completion:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completion
 {
     using TypeInfo = CommodityMetering::Attributes::TariffUnit::TypeInfo;
+    [clusterStateCacheContainer
+        _readKnownCachedAttributeWithEndpointID:static_cast<chip::EndpointId>([endpoint unsignedShortValue])
+                                      clusterID:TypeInfo::GetClusterId()
+                                    attributeID:TypeInfo::GetAttributeId()
+                                          queue:queue
+                                     completion:completion];
+}
+
+- (void)readAttributeMaximumMeteredQuantitiesWithCompletion:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completion
+{
+    using TypeInfo = CommodityMetering::Attributes::MaximumMeteredQuantities::TypeInfo;
+    [self.device _readKnownAttributeWithEndpointID:self.endpointID
+                                         clusterID:@(TypeInfo::GetClusterId())
+                                       attributeID:@(TypeInfo::GetAttributeId())
+                                            params:nil
+                                             queue:self.callbackQueue
+                                        completion:completion];
+}
+
+- (void)subscribeAttributeMaximumMeteredQuantitiesWithParams:(MTRSubscribeParams * _Nonnull)params
+                                     subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablished
+                                               reportHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))reportHandler
+{
+    using TypeInfo = CommodityMetering::Attributes::MaximumMeteredQuantities::TypeInfo;
+    [self.device _subscribeToKnownAttributeWithEndpointID:self.endpointID
+                                                clusterID:@(TypeInfo::GetClusterId())
+                                              attributeID:@(TypeInfo::GetAttributeId())
+                                                   params:params
+                                                    queue:self.callbackQueue
+                                            reportHandler:reportHandler
+                                  subscriptionEstablished:subscriptionEstablished];
+}
+
++ (void)readAttributeMaximumMeteredQuantitiesWithClusterStateCache:(MTRClusterStateCacheContainer *)clusterStateCacheContainer endpoint:(NSNumber *)endpoint queue:(dispatch_queue_t)queue completion:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completion
+{
+    using TypeInfo = CommodityMetering::Attributes::MaximumMeteredQuantities::TypeInfo;
     [clusterStateCacheContainer
         _readKnownCachedAttributeWithEndpointID:static_cast<chip::EndpointId>([endpoint unsignedShortValue])
                                       clusterID:TypeInfo::GetClusterId()
@@ -112837,6 +112542,70 @@ public:
 + (void)readAttributeGlobalStructWithClusterStateCache:(MTRClusterStateCacheContainer *)clusterStateCacheContainer endpoint:(NSNumber *)endpoint queue:(dispatch_queue_t)queue completion:(void (^)(MTRDataTypeTestGlobalStruct * _Nullable value, NSError * _Nullable error))completion
 {
     using TypeInfo = UnitTesting::Attributes::GlobalStruct::TypeInfo;
+    [clusterStateCacheContainer
+        _readKnownCachedAttributeWithEndpointID:static_cast<chip::EndpointId>([endpoint unsignedShortValue])
+                                      clusterID:TypeInfo::GetClusterId()
+                                    attributeID:TypeInfo::GetAttributeId()
+                                          queue:queue
+                                     completion:completion];
+}
+
+- (void)readAttributeUnsupportedAttributeRequiringAdminPrivilegeWithCompletion:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completion
+{
+    using TypeInfo = UnitTesting::Attributes::UnsupportedAttributeRequiringAdminPrivilege::TypeInfo;
+    [self.device _readKnownAttributeWithEndpointID:self.endpointID
+                                         clusterID:@(TypeInfo::GetClusterId())
+                                       attributeID:@(TypeInfo::GetAttributeId())
+                                            params:nil
+                                             queue:self.callbackQueue
+                                        completion:completion];
+}
+
+- (void)writeAttributeUnsupportedAttributeRequiringAdminPrivilegeWithValue:(NSNumber * _Nonnull)value completion:(MTRStatusCompletion)completion
+{
+    [self writeAttributeUnsupportedAttributeRequiringAdminPrivilegeWithValue:(NSNumber * _Nonnull) value params:nil completion:completion];
+}
+- (void)writeAttributeUnsupportedAttributeRequiringAdminPrivilegeWithValue:(NSNumber * _Nonnull)value params:(MTRWriteParams * _Nullable)params completion:(MTRStatusCompletion)completion
+{
+    // Make a copy of params before we go async.
+    params = [params copy];
+    value = [value copy];
+
+    auto * bridge = new MTRDefaultSuccessCallbackBridge(self.callbackQueue, ^(id _Nullable ignored, NSError * _Nullable error) { completion(error); }, ^(ExchangeManager & exchangeManager, const SessionHandle & session, DefaultSuccessCallbackType successCb, MTRErrorCallback failureCb, MTRCallbackBridgeBase * bridge) {
+        chip::Optional<uint16_t> timedWriteTimeout;
+        if (params != nil) {
+          if (params.timedWriteTimeout != nil){
+            timedWriteTimeout.SetValue(params.timedWriteTimeout.unsignedShortValue);
+          }
+        }
+
+        ListFreer listFreer;
+        using TypeInfo = UnitTesting::Attributes::UnsupportedAttributeRequiringAdminPrivilege::TypeInfo;
+        TypeInfo::Type cppValue;
+          cppValue = value.boolValue;
+
+        chip::Controller::ClusterBase cppCluster(exchangeManager, session, self.endpointID.unsignedShortValue);
+        return cppCluster.WriteAttribute<TypeInfo>(cppValue, bridge, successCb, failureCb, timedWriteTimeout); });
+    std::move(*bridge).DispatchAction(self.device);
+}
+
+- (void)subscribeAttributeUnsupportedAttributeRequiringAdminPrivilegeWithParams:(MTRSubscribeParams * _Nonnull)params
+                                                        subscriptionEstablished:(MTRSubscriptionEstablishedHandler _Nullable)subscriptionEstablished
+                                                                  reportHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))reportHandler
+{
+    using TypeInfo = UnitTesting::Attributes::UnsupportedAttributeRequiringAdminPrivilege::TypeInfo;
+    [self.device _subscribeToKnownAttributeWithEndpointID:self.endpointID
+                                                clusterID:@(TypeInfo::GetClusterId())
+                                              attributeID:@(TypeInfo::GetAttributeId())
+                                                   params:params
+                                                    queue:self.callbackQueue
+                                            reportHandler:reportHandler
+                                  subscriptionEstablished:subscriptionEstablished];
+}
+
++ (void)readAttributeUnsupportedAttributeRequiringAdminPrivilegeWithClusterStateCache:(MTRClusterStateCacheContainer *)clusterStateCacheContainer endpoint:(NSNumber *)endpoint queue:(dispatch_queue_t)queue completion:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completion
+{
+    using TypeInfo = UnitTesting::Attributes::UnsupportedAttributeRequiringAdminPrivilege::TypeInfo;
     [clusterStateCacheContainer
         _readKnownCachedAttributeWithEndpointID:static_cast<chip::EndpointId>([endpoint unsignedShortValue])
                                       clusterID:TypeInfo::GetClusterId()
