@@ -950,6 +950,9 @@ static BOOL AttributeIsSpecifiedInGeneralDiagnosticsCluster(AttributeId aAttribu
     case Attributes::TestEventTriggersEnabled::Id: {
         return YES;
     }
+    case Attributes::DeviceLoadStatus::Id: {
+        return YES;
+    }
     case Attributes::GeneratedCommandList::Id: {
         return YES;
     }
@@ -2562,6 +2565,15 @@ static BOOL AttributeIsSpecifiedInGroupcastCluster(AttributeId aAttributeId)
         return YES;
     }
     case Attributes::MaxMembershipCount::Id: {
+        return YES;
+    }
+    case Attributes::MaxMcastAddrCount::Id: {
+        return YES;
+    }
+    case Attributes::UsedMcastAddrCount::Id: {
+        return YES;
+    }
+    case Attributes::FabricUnderTest::Id: {
         return YES;
     }
     case Attributes::GeneratedCommandList::Id: {
@@ -4675,6 +4687,9 @@ static BOOL AttributeIsSpecifiedInOccupancySensingCluster(AttributeId aAttribute
     case Attributes::HoldTimeLimits::Id: {
         return YES;
     }
+    case Attributes::PredictedOccupancy::Id: {
+        return YES;
+    }
     case Attributes::PIROccupiedToUnoccupiedDelay::Id: {
         return YES;
     }
@@ -5330,6 +5345,61 @@ static BOOL AttributeIsSpecifiedInSoilMeasurementCluster(AttributeId aAttributeI
     }
     default: {
         // Not a known SoilMeasurement attribute.
+        return NO;
+    }
+    }
+}
+static BOOL AttributeIsSpecifiedInAmbientContextSensingCluster(AttributeId aAttributeId)
+{
+    using namespace Clusters::AmbientContextSensing;
+    switch (aAttributeId) {
+    case Attributes::HumanActivityDetected::Id: {
+        return YES;
+    }
+    case Attributes::ObjectIdentified::Id: {
+        return YES;
+    }
+    case Attributes::AudioContextDetected::Id: {
+        return YES;
+    }
+    case Attributes::AmbientContextType::Id: {
+        return YES;
+    }
+    case Attributes::AmbientContextTypeSupported::Id: {
+        return YES;
+    }
+    case Attributes::SimultaneousDetectionLimit::Id: {
+        return YES;
+    }
+    case Attributes::ObjectCountReached::Id: {
+        return YES;
+    }
+    case Attributes::HoldTime::Id: {
+        return YES;
+    }
+    case Attributes::HoldTimeLimits::Id: {
+        return YES;
+    }
+    case Attributes::PredictedActivity::Id: {
+        return YES;
+    }
+    case Attributes::GeneratedCommandList::Id: {
+        return YES;
+    }
+    case Attributes::AcceptedCommandList::Id: {
+        return YES;
+    }
+    case Attributes::AttributeList::Id: {
+        return YES;
+    }
+    case Attributes::FeatureMap::Id: {
+        return YES;
+    }
+    case Attributes::ClusterRevision::Id: {
+        return YES;
+    }
+    default: {
+        // Not a known AmbientContextSensing attribute.
         return NO;
     }
     }
@@ -7313,6 +7383,9 @@ BOOL MTRAttributeIsSpecified(ClusterId aClusterId, AttributeId aAttributeId)
     }
     case Clusters::SoilMeasurement::Id: {
         return AttributeIsSpecifiedInSoilMeasurementCluster(aAttributeId);
+    }
+    case Clusters::AmbientContextSensing::Id: {
+        return AttributeIsSpecifiedInAmbientContextSensingCluster(aAttributeId);
     }
     case Clusters::WiFiNetworkManagement::Id: {
         return AttributeIsSpecifiedInWiFiNetworkManagementCluster(aAttributeId);

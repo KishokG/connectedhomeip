@@ -308,8 +308,7 @@ def _find_test_class():
 
     def get_subclasses(cls: Any):
         subclasses = utils.find_subclasses_in_module([cls], sys.modules['__main__'])
-        subclasses = [c for c in subclasses if c.__name__ != cls.__name__]
-        return subclasses
+        return [c for c in subclasses if c.__name__ != cls.__name__]
 
     def has_subclasses(cls: Any):
         return get_subclasses(cls) != []
@@ -405,8 +404,7 @@ def run_tests_no_exit(
 
     # NOTE: It's not possible to pass event loop via Mobly TestRunConfig user params, because the
     #       Mobly deep copies the user params before passing them to the test class and the event
-    # loop is not serializable. So, we are setting the event loop as a test
-    # class member.
+    #       loop is not serializable. So, we are setting the event loop as a test class member.
     CommissionDeviceTest.event_loop = event_loop
     test_class.event_loop = event_loop
 
@@ -454,6 +452,15 @@ def run_tests_no_exit(
 
         # Execute the test class with the config
         ok = True
+
+        def _handler(loop, context):
+            loop.default_exception_handler(context)
+            nonlocal ok
+            # Fail the test run on unhandled exceptions.
+            ok = False
+
+        # Set custom exception handler to catch unhandled exceptions.
+        event_loop.set_exception_handler(_handler)
 
         runner = TestRunner(log_dir=test_config.log_path,
                             testbed_name=test_config.testbed_name)
@@ -699,17 +706,17 @@ def populate_commissioning_args(args: argparse.Namespace, config) -> bool:
             print("error: Duplicate values in node id list")
             return False
 
-    wifi_args = ['ble-wifi']
+    wifi_args = ['ble-wifi', 'nfc-wifi']
     thread_args = ['ble-thread', 'nfc-thread']
     if commissioning_method in wifi_args:
         if args.wifi_ssid is None:
             print("error: missing --wifi-ssid <SSID> for --commissioning-method "
-                  "or --in-test-commissioning-method ble-wifi!")
+                  "or --in-test-commissioning-method ble-wifi or nfc-wifi!")
             return False
 
         if args.wifi_passphrase is None:
             print("error: missing --wifi-passphrase <passphrase> for --commissioning-method or "
-                  "--in-test-commissioning-method ble-wifi!")
+                  "--in-test-commissioning-method ble-wifi or nfc-wifi!")
             return False
 
         config.wifi_ssid = args.wifi_ssid
@@ -762,11 +769,13 @@ def convert_args_to_matter_config(args: argparse.Namespace):
 
         if any([args.passcodes, args.discriminators, args.manual_code, args.qr_code]):
             LOGGER.error("Error: Do not provide discriminator, passcode, manual code or qr-code for NFC commissioning. "
-                         "The payload is read directly from the NFC tag.")
+                         "The onboarding data is read directly from the NFC tag.")
             sys.exit(1)
 
-        from matter.testing.matter_nfc_interaction import connect_read_nfc_tag_data
-        nfc_tag_data = connect_read_nfc_tag_data(config.global_test_params.get("NFC_Reader_index", 0))
+        from matter.testing.nfc import NFCReader
+        nfc_reader_index = config.global_test_params.get("NFC_Reader_index", 0)
+        reader = NFCReader(nfc_reader_index)
+        nfc_tag_data = reader.read_nfc_tag_data()
         args.qr_code.append(nfc_tag_data)
 
     # Populate commissioning config if present, exiting on error
@@ -785,6 +794,7 @@ def convert_args_to_matter_config(args: argparse.Namespace):
     config.timeout = args.timeout  # This can be none, we pull the default from the test if it's unspecified
     config.endpoint = args.endpoint  # This can be None, the get_endpoint function allows the tests to supply a default
     config.restart_flag_file = args.restart_flag_file
+    config.debug = args.debug
 
     # Map CLI arg to the current config field name used by tests
     config.pipe_name = args.app_pipe
@@ -793,6 +803,11 @@ def convert_args_to_matter_config(args: argparse.Namespace):
         # Verify from start the named pipe exists.
         LOGGER.error("Named pipe %r does NOT exist" % config.pipe_name)
         raise FileNotFoundError("CANNOT FIND %r" % config.pipe_name)
+
+    config.pipe_name_out = args.app_pipe_out
+    if config.pipe_name_out is not None and not os.path.exists(config.pipe_name_out):
+        LOGGER.error("Named pipe %r does NOT exist" % config.pipe_name_out)
+        raise FileNotFoundError("CANNOT FIND %r" % config.pipe_name_out)
 
     config.fail_on_skipped_tests = args.fail_on_skipped
 
@@ -841,9 +856,14 @@ def parse_matter_test_args(argv: Optional[List[str]] = None):
                              help='Node ID for primary DUT communication, '
                              'and NodeID to assign if commissioning (default: %d)' % TestingDefaults.DUT_NODE_ID, nargs="+")
     basic_group.add_argument('--endpoint', type=int, default=None, help="Endpoint under test")
-    basic_group.add_argument('--app-pipe', type=str, default=None, help="The full path of the app to send an out-of-band command")
+    basic_group.add_argument('--app-pipe', type=str, default=None,
+                             help="The full path of the app to send an out-of-band command from test to app")
+    basic_group.add_argument('--app-pipe-out', type=str, default=None,
+                             help="The full path of the app to read an out-of-band command from app to test")
     basic_group.add_argument('--restart-flag-file', type=str, default=None,
                              help="The full path of the file to use to signal a restart to the app")
+    basic_group.add_argument('--debug', action="store_true", default=False,
+                             help="Run the script in debug mode. This is needed to capture attribute dump at end of test modules if there are problems found during testing.")
     basic_group.add_argument('--timeout', type=int, help="Test timeout in seconds")
     basic_group.add_argument("--PICS", help="PICS file path", type=str)
 
@@ -854,11 +874,11 @@ def parse_matter_test_args(argv: Optional[List[str]] = None):
 
     commission_group.add_argument('-m', '--commissioning-method', type=str,
                                   metavar='METHOD_NAME',
-                                  choices=["on-network", "ble-wifi", "ble-thread", "nfc-thread"],
+                                  choices=["on-network", "ble-wifi", "ble-thread", "nfc-thread", "nfc-wifi"],
                                   help='Name of commissioning method to use')
     commission_group.add_argument('--in-test-commissioning-method', type=str,
                                   metavar='METHOD_NAME',
-                                  choices=["on-network", "ble-wifi", "ble-thread", "nfc-thread"],
+                                  choices=["on-network", "ble-wifi", "ble-thread", "nfc-thread", "nfc-wifi"],
                                   help='Name of commissioning method to use, for commissioning tests')
     commission_group.add_argument('-d', '--discriminator', type=int_decimal_or_hex,
                                   metavar='LONG_DISCRIMINATOR',
@@ -1015,7 +1035,7 @@ def bool_named_arg(s: str) -> Tuple[str, bool]:
 
     name = match.group("name")
     if match.group("truth_value"):
-        value = True if match.group("truth_value").lower() == "true" else False
+        value = match.group("truth_value").lower() == "true"
     else:
         value = int(match.group("decimal_value")) != 0
 

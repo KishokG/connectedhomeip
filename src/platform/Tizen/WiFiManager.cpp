@@ -340,7 +340,7 @@ void WiFiManager::_ScanToConnectFinishedCb(wifi_manager_error_e wifiErr, void * 
         foundAp = sInstance._WiFiGetFoundAP();
         if (foundAp != nullptr)
         {
-            PlatformMgrImpl().GLibMatterContextInvokeSync(_WiFiConnect, foundAp);
+            TEMPORARY_RETURN_IGNORED PlatformMgrImpl().GLibMatterContextInvokeSync(_WiFiConnect, foundAp);
         }
     }
     else
@@ -417,7 +417,8 @@ bool WiFiManager::_FoundAPOnScanCb(wifi_manager_ap_h ap, void * userData)
     wifiErr = wifi_manager_ap_get_rssi(ap, &rssi);
     VerifyOrExit(wifiErr == WIFI_MANAGER_ERROR_NONE,
                  ChipLogError(DeviceLayer, "Fail: get rssi value [%s]", get_error_message(wifiErr)));
-    scannedAP.rssi = static_cast<int8_t>(rssi);
+    scannedAP.signal.type     = NetworkCommissioning::WirelessSignalType::kdBm;
+    scannedAP.signal.strength = static_cast<int8_t>(rssi);
 
     wifiErr = wifi_manager_ap_get_security_type(ap, &type);
     VerifyOrExit(wifiErr == WIFI_MANAGER_ERROR_NONE,
@@ -818,7 +819,7 @@ void WiFiManager::Init()
     sInstance.mModuleState     = WIFI_MANAGER_MODULE_STATE_DETACHED;
     sInstance.mConnectionState = WIFI_MANAGER_CONNECTION_STATE_DISCONNECTED;
 
-    PlatformMgrImpl().GLibMatterContextInvokeSync(_WiFiInitialize, static_cast<void *>(nullptr));
+    TEMPORARY_RETURN_IGNORED PlatformMgrImpl().GLibMatterContextInvokeSync(_WiFiInitialize, static_cast<void *>(nullptr));
 }
 
 void WiFiManager::Deinit()

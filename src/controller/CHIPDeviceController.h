@@ -862,7 +862,7 @@ protected:
 
     /* This function start the JCM verification steps
      */
-    virtual CHIP_ERROR StartJCMTrustVerification() { return CHIP_ERROR_NOT_IMPLEMENTED; }
+    virtual CHIP_ERROR StartJCMTrustVerification(DeviceProxy * proxy) { return CHIP_ERROR_NOT_IMPLEMENTED; }
 
 #if CHIP_CONFIG_ENABLE_READ_CLIENT
     virtual CHIP_ERROR ParseExtraCommissioningInfo(ReadCommissioningInfo & info, const CommissioningParameters & params)
@@ -885,6 +885,9 @@ private:
     Optional<System::Clock::Timeout> mCommissioningStepTimeout; // Note: For multi-interaction steps this is per interaction
     CommissioningStage mCommissioningStage = CommissioningStage::kSecurePairing;
     uint8_t mReadCommissioningInfoProgress = 0; // see ContinueReadingCommissioningInfo()
+
+    // Stores the PASE session address to use as fallback during operational discovery
+    Optional<AddressResolve::ResolveResult> mFallbackOperationalResolveResult;
 
     bool mRunCommissioningAfterConnection = false;
     Internal::InvokeCancelFn mInvokeCancelFn;

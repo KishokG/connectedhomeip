@@ -18,7 +18,7 @@
 #include <AppMain.h>
 #include <app/clusters/thread-border-router-management-server/thread-border-router-management-server.h>
 #include <app/clusters/thread-network-directory-server/thread-network-directory-server.h>
-#include <app/clusters/wifi-network-management-server/wifi-network-management-server.h>
+#include <app/clusters/wifi-network-management-server/WiFiNetworkManagementCluster.h>
 #include <lib/core/CHIPSafeCasts.h>
 #include <lib/support/CodeUtils.h>
 #include <lib/support/Span.h>
@@ -48,14 +48,14 @@ std::optional<DefaultThreadNetworkDirectoryServer> gThreadNetworkDirectoryServer
 void emberAfThreadNetworkDirectoryClusterInitCallback(EndpointId endpoint)
 {
     VerifyOrDie(!gThreadNetworkDirectoryServer);
-    gThreadNetworkDirectoryServer.emplace(endpoint).Init();
+    TEMPORARY_RETURN_IGNORED gThreadNetworkDirectoryServer.emplace(endpoint).Init();
 }
 
 std::optional<WiFiNetworkManagementServer> gWiFiNetworkManagementServer;
 void emberAfWiFiNetworkManagementClusterInitCallback(EndpointId endpoint)
 {
     VerifyOrDie(!gWiFiNetworkManagementServer);
-    gWiFiNetworkManagementServer.emplace(endpoint).Init();
+    TEMPORARY_RETURN_IGNORED gWiFiNetworkManagementServer.emplace(endpoint).Init();
 }
 
 std::optional<ThreadBorderRouterManagement::ServerInstance> gThreadBorderRouterManagementServer;
@@ -67,7 +67,9 @@ void emberAfThreadBorderRouterManagementClusterInitCallback(EndpointId endpoint)
 #else
     static FakeBorderRouterDelegate delegate{};
 #endif
-    gThreadBorderRouterManagementServer.emplace(endpoint, &delegate, Server::GetInstance().GetFailSafeContext()).Init();
+    TEMPORARY_RETURN_IGNORED gThreadBorderRouterManagementServer
+        .emplace(endpoint, &delegate, Server::GetInstance().GetFailSafeContext())
+        .Init();
 }
 
 static void ApplicationEarlyInit()
@@ -79,8 +81,8 @@ static void ApplicationEarlyInit()
 
 void ApplicationInit()
 {
-    gWiFiNetworkManagementServer->SetNetworkCredentials(ByteSpanFromCharSpan("MatterAP"_span),
-                                                        ByteSpanFromCharSpan("Setec Astronomy"_span));
+    TEMPORARY_RETURN_IGNORED gWiFiNetworkManagementServer->SetNetworkCredentials(ByteSpanFromCharSpan("MatterAP"_span),
+                                                                                 ByteSpanFromCharSpan("Setec Astronomy"_span));
 }
 
 void ApplicationShutdown()
