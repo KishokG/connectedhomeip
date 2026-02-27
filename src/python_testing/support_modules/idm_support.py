@@ -468,7 +468,7 @@ class IDMBaseTest(MatterBaseTest):
             asserts.assert_equal(
                 sorted(attribute_ids),
                 sorted(read_request[endpoint][cluster][cluster.Attributes.AttributeList]),
-                f"Expected attribute list does not match for cluster {cluster}"
+                f"Expected attribute list does not match for cluster {cluster.__name__} (ID: {cluster.id})"
             )
         return read_request
 
