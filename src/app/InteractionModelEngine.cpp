@@ -51,6 +51,7 @@
 #include <lib/support/FibonacciUtils.h>
 #include <lib/support/ReadOnlyBuffer.h>
 #include <protocols/interaction_model/StatusCode.h>
+#include <transport/raw/GroupcastTesting.h>
 
 #include <cinttypes>
 
@@ -239,19 +240,6 @@ void InteractionModelEngine::Shutdown()
     mTimedHandlers.ReleaseAll();
 
     mReadHandlers.ReleaseAll();
-
-    // Shut down the data model provider to clear cluster mContext pointers.
-    // Required for proper Stop() → Start() lifecycle - ensures clusters are reinitialized.
-    if (mDataModelProvider != nullptr)
-    {
-        CHIP_ERROR err = mDataModelProvider->Shutdown();
-        if (err != CHIP_NO_ERROR)
-        {
-            ChipLogError(InteractionModel,
-                         "InteractionModelEngine::Shutdown() Data model provider shutdown failed: %" CHIP_ERROR_FORMAT,
-                         err.Format());
-        }
-    }
 
 #if CHIP_CONFIG_ENABLE_READ_CLIENT
     // Shut down any subscription clients that are still around.  They won't be
@@ -1110,6 +1098,27 @@ CHIP_ERROR InteractionModelEngine::OnMessageReceived(Messaging::ExchangeContext 
         status = Status::InvalidAction;
     }
 
+    // Groupcast Testing
+    if (apExchangeContext->IsGroupExchangeContext())
+    {
+        auto & testing = Groupcast::GetTesting();
+        if (testing.IsEnabled() && testing.IsFabricUnderTest(apExchangeContext->GetSessionHandle()->GetFabricIndex()))
+        {
+            Clusters::Groupcast::Events::GroupcastTesting::Type event;
+            if ((testing.GetTestResultEnum() == Groupcast::Testing::Result::kSuccess) && (status != Status::Success))
+            {
+                testing.SetTestResult(Groupcast::Testing::Result::kGeneralError);
+            }
+            // Convert to event type
+            testing.ToEventType(event);
+            testing.Clear();
+            // Generate event
+            DataModel::EventsGenerator & eventGenerator = EventManagement::GetInstance();
+            eventGenerator.GenerateEvent(event, kRootEndpointId);
+            eventGenerator.ScheduleUrgentEventDeliverySync();
+        }
+    }
+
     if (status != Status::Success && !apExchangeContext->IsGroupExchangeContext())
     {
         return StatusResponse::Send(status, apExchangeContext, false /*aExpectResponse*/);
@@ -1791,10 +1800,8 @@ void InteractionModelEngine::DispatchCommand(CommandHandlerImpl & apCommandObj, 
 {
     Access::SubjectDescriptor subjectDescriptor = apCommandObj.GetSubjectDescriptor();
 
-    DataModel::InvokeRequest request;
-    request.path = aCommandPath;
+    DataModel::InvokeRequest request(aCommandPath, subjectDescriptor);
     request.invokeFlags.Set(DataModel::InvokeFlags::kTimed, apCommandObj.IsTimedInvoke());
-    request.subjectDescriptor = &subjectDescriptor;
 
     std::optional<DataModel::ActionReturnStatus> status = GetDataModelProvider()->InvokeCommand(request, apPayload, &apCommandObj);
 
@@ -1832,6 +1839,16 @@ Protocols::InteractionModel::Status InteractionModelEngine::ValidateCommandCanBe
     Access::Privilege privilegeToCheck = commandExists ? acceptedCommandEntry.GetInvokePrivilege() : Access::Privilege::kOperate;
 
     Status accessStatus = CheckCommandAccess(request, privilegeToCheck);
+    // Groupcast Testing
+    auto & testing = Groupcast::GetTesting();
+    if (testing.IsEnabled() && testing.IsFabricUnderTest(request.GetAccessingFabricIndex()))
+    {
+        testing.SetAccessAllowed(Status::Success == accessStatus);
+        if (!testing.GetAccessAllowed().ValueOr(false))
+        {
+            testing.SetTestResult(Groupcast::Testing::Result::kFailedAuth);
+        }
+    }
     VerifyOrReturnValue(accessStatus == Status::Success, accessStatus);
 
     if (!commandExists)
@@ -1847,17 +1864,12 @@ Protocols::InteractionModel::Status InteractionModelEngine::ValidateCommandCanBe
 Protocols::InteractionModel::Status InteractionModelEngine::CheckCommandAccess(const DataModel::InvokeRequest & aRequest,
                                                                                const Access::Privilege aRequiredPrivilege)
 {
-    if (aRequest.subjectDescriptor == nullptr)
-    {
-        return Status::UnsupportedAccess; // we require a subject for invoke
-    }
-
     Access::RequestPath requestPath{ .cluster     = aRequest.path.mClusterId,
                                      .endpoint    = aRequest.path.mEndpointId,
                                      .requestType = Access::RequestType::kCommandInvokeRequest,
                                      .entityId    = aRequest.path.mCommandId };
 
-    CHIP_ERROR err = Access::GetAccessControl().Check(*aRequest.subjectDescriptor, requestPath, aRequiredPrivilege);
+    CHIP_ERROR err = Access::GetAccessControl().Check(aRequest.subjectDescriptor, requestPath, aRequiredPrivilege);
     if (err != CHIP_NO_ERROR)
     {
         if ((err != CHIP_ERROR_ACCESS_DENIED) && (err != CHIP_ERROR_ACCESS_RESTRICTED_BY_ARL))
@@ -1929,20 +1941,14 @@ DataModel::Provider * InteractionModelEngine::SetDataModelProvider(DataModel::Pr
     // Altering data model should not be done while IM is actively handling requests.
     VerifyOrDie(mReadHandlers.begin() == mReadHandlers.end());
 
-    // REMOVED: Early return when (model == mDataModelProvider) - breaks Stop() → Start()
-    // After Shutdown(), server clusters are uninitialized even though pointer is unchanged.
-    // Must call Startup() again to reinitialize cluster mContext pointers.
-
     if (model == mDataModelProvider)
     {
-        ChipLogDetail(DataManagement,
-                      "InteractionModelEngine::SetDataModelProvider() re-initializing same provider (Stop/Start cycle)");
+        // no-op, just return
+        return model;
     }
 
     DataModel::Provider * oldModel = mDataModelProvider;
-
-    // Only shutdown if changing to a different provider
-    if (oldModel != nullptr && oldModel != model)
+    if (oldModel != nullptr)
     {
         CHIP_ERROR err = oldModel->Shutdown();
         if (err != CHIP_NO_ERROR)

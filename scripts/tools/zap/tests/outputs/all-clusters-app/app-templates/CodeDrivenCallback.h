@@ -120,6 +120,14 @@ void MatterBooleanStateClusterInitCallback(chip::EndpointId endpointId);
 
 void MatterBooleanStateClusterShutdownCallback(chip::EndpointId endpointId, MatterClusterShutdownType shutdownType);
 
+void MatterTemperatureControlClusterInitCallback(chip::EndpointId endpointId);
+
+void MatterTemperatureControlClusterShutdownCallback(chip::EndpointId endpointId, MatterClusterShutdownType shutdownType);
+
+void MatterAirQualityClusterInitCallback(chip::EndpointId endpointId);
+
+void MatterAirQualityClusterShutdownCallback(chip::EndpointId endpointId, MatterClusterShutdownType shutdownType);
+
 void MatterScenesManagementClusterInitCallback(chip::EndpointId endpointId);
 
 void MatterScenesManagementClusterShutdownCallback(chip::EndpointId endpointId, MatterClusterShutdownType shutdownType);
