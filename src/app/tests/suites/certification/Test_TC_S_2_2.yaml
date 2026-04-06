@@ -133,8 +133,6 @@ tests:
                 value: [1]
               - name: "KeySetID"
                 value: 0x01a1
-              - name: "FabricIndex"
-                value: 1
 
     - label:
           "Step 1a: TH sends a AddGroup command to DUT with the GroupID field
@@ -397,7 +395,7 @@ tests:
 
     - label:
           "TH confirm the DUT reached AC1 (on level control cluster) after 250ms"
-      PICS: PICS_SDK_CI_ONLY && S.S.C05.Rsp
+      PICS: "PICS_SDK_CI_ONLY && S.S.C05.Rsp"
       cluster: "Level Control"
       command: "readAttribute"
       attribute: "CurrentLevel"
@@ -543,7 +541,7 @@ tests:
 
     - label:
           "TH confirm the DUT reached AC1 (on level control cluster) after 250ms"
-      PICS: PICS_SDK_CI_ONLY && S.S.C05.Rsp
+      PICS: "PICS_SDK_CI_ONLY && S.S.C05.Rsp"
       cluster: "Level Control"
       command: "readAttribute"
       attribute: "CurrentLevel"
@@ -605,7 +603,7 @@ tests:
     - label:
           "Step 5a: TH sends a ViewScene command to DUT with the GroupID field
           set to G1 and the SceneID field set to 0x01."
-      PICS: S.S.C01.Rsp && PICS_SDK_CI_ONLY
+      PICS: "S.S.C01.Rsp && PICS_SDK_CI_ONLY"
       command: "ViewScene"
       arguments:
           values:
@@ -727,7 +725,7 @@ tests:
           [1720440014.728] [13252:13254] [TOO]            }
           [1720440014.729] [13252:13254] [TOO]        }
           [1720440014.729] [13252:13254] [TOO]    }
-      PICS: S.S.C01.Rsp && PICS_SKIP_SAMPLE_APP
+      PICS: "S.S.C01.Rsp && PICS_SKIP_SAMPLE_APP"
       cluster: "LogCommands"
       command: "UserPrompt"
       arguments:
@@ -863,7 +861,7 @@ tests:
           set to G1, the SceneID field set to 0x01, the TransitionTime field set
           to 60 000 000 (60 000s) and a set of extension fields appropriate to
           AC1."
-      PICS: S.S.C00.Rsp && PICS_SDK_CI_ONLY
+      PICS: "S.S.C00.Rsp && PICS_SDK_CI_ONLY"
       command: "AddScene"
       arguments:
           values:
@@ -934,7 +932,7 @@ tests:
           set to GI (Where GI is a group currently absent from the group table),
           the SceneID field set to 0x01, the TransitionTime field set to 1000
           (1s) and a set of extension fields appropriate to AC1."
-      PICS: S.S.C00.Rsp && PICS_SDK_CI_ONLY
+      PICS: "S.S.C00.Rsp && PICS_SDK_CI_ONLY"
       command: "AddScene"
       arguments:
           values:
@@ -1119,7 +1117,7 @@ tests:
           ExtensionField (Unscenable attribute ID for given cluster). This
           should fail and return a status of 0x85 (INVALID_COMMAND)."
       ## TODO: Change test to test for an existing bu non scenable attribute ID once scenability check is possible, see issue: https://github.com/project-chip/connectedhomeip/issues/24177
-      PICS: S.S.C00.Rsp && PICS_SDK_CI_ONLY
+      PICS: "S.S.C00.Rsp && PICS_SDK_CI_ONLY"
       command: "AddScene"
       arguments:
           values:
@@ -1516,8 +1514,6 @@ tests:
                 value: [1]
               - name: "KeySetID"
                 value: 0x01a1
-              - name: "FabricIndex"
-                value: 1
 
     - label:
           "Step 13a: If capacity allows, TH sends a AddGroup command to DUT with
