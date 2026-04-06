@@ -1523,7 +1523,7 @@ tests:
           "Step 13a: If capacity allows, TH sends a AddGroup command to DUT with
           the GroupID field set to G2."
       runIf: ContinueTest
-      PICS: !GC.S && G.S.C00.Rsp
+      PICS: "!GC.S && G.S.C00.Rsp"
       cluster: "Groups"
       command: "AddGroup"
       arguments:
