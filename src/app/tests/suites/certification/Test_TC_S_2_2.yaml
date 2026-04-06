@@ -102,6 +102,17 @@ tests:
                   { FabricIndex: 1, GroupId: G1, GroupKeySetID: 0x01a1 },
                   { FabricIndex: 1, GroupId: G2, GroupKeySetID: 0x01a1 },
               ]
+              
+    - label: "Step 0d pre-check: Read Groupcast Membership to check if any entries exist"
+      PICS: "GC.S"
+      cluster: "Groupcast"
+      endpoint: groupcastendpoint
+      command: "readAttribute"
+      attribute: "Membership"
+      response:
+          saveAs: membershipList
+          constraints:
+              type: list
 
     - label: "Step 0d: If the Groupcast cluster is enabled on the RootNode endpoint,
              TH sends Groupcast LeaveGroup command with GroupID = 0 to DUT"
