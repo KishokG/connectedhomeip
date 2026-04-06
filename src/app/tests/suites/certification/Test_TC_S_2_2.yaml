@@ -22,6 +22,7 @@ config:
     nodeId: 0x12344321
     cluster: "Scenes Management"
     endpoint: 1
+    groupcastendpoint: 0
     G1:
         type: group_id
         defaultValue: 0x0001
@@ -90,6 +91,7 @@ tests:
           "Step 0c: TH binds GroupIds 0x0001 and 0x0002 with GroupKeySetID
           0x01a1 in the GroupKeyMap attribute list on GroupKeyManagement cluster
           by writing the GroupKeyMap attribute with two entries as follows:"
+      PICS: !GC.S
       cluster: "Group Key Management"
       endpoint: 0
       command: "writeAttribute"
@@ -101,16 +103,43 @@ tests:
                   { FabricIndex: 1, GroupId: G2, GroupKeySetID: 0x01a1 },
               ]
 
+    - label: "Step 0d: If the Groupcast cluster is enabled on the RootNode endpoint,
+             TH sends Groupcast LeaveGroup command with GroupID = 0 to DUT"
+      PICS: "GC.S"
+      cluster: "Groupcast"
+      endpoint: groupcastendpoint
+      command: "LeaveGroup"
+      arguments:
+          values:
+              - name: "GroupID"
+                value: 0x0000      
+      
     - label: "Step 0d: TH sends a RemoveAllGroups command to DUT."
-      PICS: G.S.C04.Rsp
+      PICS: !GC.S && G.S.C04.Rsp
       cluster: "Groups"
       endpoint: endpoint
       command: "RemoveAllGroups"
 
+    - label: "Step 1a: If Groupcast is enabled on RootNode, TH sends JoinGroup with G1, Scene endpoint, and KeySetID 0x01a1"
+      PICS: GC.S
+      cluster: "Groupcast"
+      endpoint: groupcastendpoint
+      command: "JoinGroup"
+      arguments:
+          values:
+              - name: "GroupID"
+                value: G1   
+              - name: "Endpoint"
+                value: 1
+              - name: "GroupKeySetID"
+                value: 0x01a1
+              - name: "FabricIndex"
+                value: 1
+
     - label:
           "Step 1a: TH sends a AddGroup command to DUT with the GroupID field
           set to G1."
-      PICS: G.S.C00.Rsp
+      PICS: !GC-S && G.S.C00.Rsp
       cluster: "Groups"
       command: "AddGroup"
       arguments:
@@ -1474,11 +1503,27 @@ tests:
               - name: "SceneList"
                 value: [0x01, 0x02]
 
+    - label: "Step 13a: If Groupcast is enabled on RootNode, TH sends JoinGroup with G2, Scene endpoint, and KeySetID 0x01a1"
+      PICS: GC.S
+      cluster: "Groupcast"
+      endpoint: groupcastendpoint
+      command: "JoinGroup"
+      arguments:
+          values:
+              - name: "GroupID"
+                value: G2   
+              - name: "Endpoint"
+                value: 1
+              - name: "GroupKeySetID"
+                value: 0x01a1
+              - name: "FabricIndex"
+                value: 1
+
     - label:
           "Step 13a: If capacity allows, TH sends a AddGroup command to DUT with
           the GroupID field set to G2."
       runIf: ContinueTest
-      PICS: G.S.C00.Rsp
+      PICS: !GC.S && G.S.C00.Rsp
       cluster: "Groups"
       command: "AddGroup"
       arguments:
