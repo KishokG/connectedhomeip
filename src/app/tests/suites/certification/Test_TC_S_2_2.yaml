@@ -117,6 +117,7 @@ tests:
     - label: "Step 0d: If the Groupcast cluster is enabled on the RootNode endpoint,
              TH sends Groupcast LeaveGroup command with GroupID = 0 to DUT"
       PICS: "GC.S"
+      runIf: membershipList
       cluster: "Groupcast"
       endpoint: groupcastendpoint
       command: "LeaveGroup"
