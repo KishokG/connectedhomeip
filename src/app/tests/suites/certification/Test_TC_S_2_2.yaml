@@ -91,7 +91,7 @@ tests:
           "Step 0c: TH binds GroupIds 0x0001 and 0x0002 with GroupKeySetID
           0x01a1 in the GroupKeyMap attribute list on GroupKeyManagement cluster
           by writing the GroupKeyMap attribute with two entries as follows:"
-      PICS: !GC.S
+      PICS: "!GC.S"
       cluster: "Group Key Management"
       endpoint: 0
       command: "writeAttribute"
@@ -115,7 +115,7 @@ tests:
                 value: 0x0000
 
     - label: "Step 0d: TH sends a RemoveAllGroups command to DUT."
-      PICS: !GC.S && G.S.C04.Rsp
+      PICS: "!GC.S && G.S.C04.Rsp"
       cluster: "Groups"
       endpoint: endpoint
       command: "RemoveAllGroups"
