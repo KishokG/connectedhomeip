@@ -129,9 +129,9 @@ tests:
           values:
               - name: "GroupID"
                 value: G1
-              - name: "Endpoint"
-                value: 1
-              - name: "GroupKeySetID"
+              - name: "Endpoints"
+                value: [1]
+              - name: "KeySetID"
                 value: 0x01a1
               - name: "FabricIndex"
                 value: 1
@@ -1512,9 +1512,9 @@ tests:
           values:
               - name: "GroupID"
                 value: G2
-              - name: "Endpoint"
-                value: 1
-              - name: "GroupKeySetID"
+              - name: "Endpoints"
+                value: [1]
+              - name: "KeySetID"
                 value: 0x01a1
               - name: "FabricIndex"
                 value: 1
