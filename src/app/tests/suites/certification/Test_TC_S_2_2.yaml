@@ -112,8 +112,8 @@ tests:
       arguments:
           values:
               - name: "GroupID"
-                value: 0x0000      
-      
+                value: 0x0000
+
     - label: "Step 0d: TH sends a RemoveAllGroups command to DUT."
       PICS: !GC.S && G.S.C04.Rsp
       cluster: "Groups"
@@ -128,7 +128,7 @@ tests:
       arguments:
           values:
               - name: "GroupID"
-                value: G1   
+                value: G1
               - name: "Endpoint"
                 value: 1
               - name: "GroupKeySetID"
@@ -1511,7 +1511,7 @@ tests:
       arguments:
           values:
               - name: "GroupID"
-                value: G2   
+                value: G2
               - name: "Endpoint"
                 value: 1
               - name: "GroupKeySetID"
