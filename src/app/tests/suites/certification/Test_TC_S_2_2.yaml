@@ -1688,5 +1688,5 @@ tests:
       command: "KeySetRemove"
       arguments:
           values:
-              - name: GroupKeySetID
+              - name: "GroupKeySetID"
                 value: 0x01a1
