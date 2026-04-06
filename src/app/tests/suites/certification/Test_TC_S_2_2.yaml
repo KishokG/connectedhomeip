@@ -319,7 +319,7 @@ tests:
       arguments:
           values:
               - name: "GroupID"
-                value: G1
+                value: GI
               - name: "SceneID"
                 value: 0xFF
       response:
