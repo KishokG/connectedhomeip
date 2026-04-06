@@ -139,7 +139,7 @@ tests:
     - label:
           "Step 1a: TH sends a AddGroup command to DUT with the GroupID field
           set to G1."
-      PICS: !GC-S && G.S.C00.Rsp
+      PICS: !GC.S && G.S.C00.Rsp
       cluster: "Groups"
       command: "AddGroup"
       arguments:
@@ -319,7 +319,7 @@ tests:
       arguments:
           values:
               - name: "GroupID"
-                value: GI
+                value: G1
               - name: "SceneID"
                 value: 0xFF
       response:
