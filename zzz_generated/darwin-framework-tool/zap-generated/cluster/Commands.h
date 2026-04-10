@@ -145,6 +145,7 @@
 | RadonConcentrationMeasurement                                       | 0x042F |
 | SoilMeasurement                                                     | 0x0430 |
 | AmbientContextSensing                                               | 0x0431 |
+| ProximityRanging                                                    | 0x0433 |
 | WiFiNetworkManagement                                               | 0x0451 |
 | ThreadBorderRouterManagement                                        | 0x0452 |
 | ThreadNetworkDirectory                                              | 0x0453 |
@@ -142465,6 +142466,1297 @@ public:
 
 #endif // MTR_ENABLE_PROVISIONAL
 #endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+/*----------------------------------------------------------------------------*\
+| Cluster ProximityRanging                                            | 0x0433 |
+|------------------------------------------------------------------------------|
+| Commands:                                                           |        |
+| * StartRangingRequest                                               |   0x00 |
+| * StopRangingRequest                                                |   0x02 |
+|------------------------------------------------------------------------------|
+| Attributes:                                                         |        |
+| * RangingCapabilities                                               | 0x0000 |
+| * WiFiDevIK                                                         | 0x0001 |
+| * BLEDeviceID                                                       | 0x0002 |
+| * BLTDevIK                                                          | 0x0003 |
+| * BLTCSSecurityLevel                                                | 0x0004 |
+| * BLTCSModeCapability                                               | 0x0005 |
+| * SessionIDList                                                     | 0x0006 |
+| * GeneratedCommandList                                              | 0xFFF8 |
+| * AcceptedCommandList                                               | 0xFFF9 |
+| * AttributeList                                                     | 0xFFFB |
+| * FeatureMap                                                        | 0xFFFC |
+| * ClusterRevision                                                   | 0xFFFD |
+|------------------------------------------------------------------------------|
+| Events:                                                             |        |
+| * RangingResult                                                     | 0x0000 |
+| * RangingSessionStatus                                              | 0x0001 |
+\*----------------------------------------------------------------------------*/
+
+#if MTR_ENABLE_PROVISIONAL
+/*
+ * Command StartRangingRequest
+ */
+class ProximityRangingStartRangingRequest : public ClusterCommand {
+public:
+    ProximityRangingStartRangingRequest()
+        : ClusterCommand("start-ranging-request")
+        , mComplex_WiFiRangingDeviceRoleConfig(&mRequest.wiFiRangingDeviceRoleConfig)
+        , mComplex_BLERangingDeviceRoleConfig(&mRequest.BLERangingDeviceRoleConfig)
+        , mComplex_BLTChannelSoundingDeviceRoleConfig(&mRequest.BLTChannelSoundingDeviceRoleConfig)
+        , mComplex_Trigger(&mRequest.trigger)
+        , mComplex_ReportingCondition(&mRequest.reportingCondition)
+    {
+#if MTR_ENABLE_PROVISIONAL
+        AddArgument("Technology", 0, UINT8_MAX, &mRequest.technology);
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        AddArgument("WiFiRangingDeviceRoleConfig", &mComplex_WiFiRangingDeviceRoleConfig);
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        AddArgument("BLERangingDeviceRoleConfig", &mComplex_BLERangingDeviceRoleConfig);
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        AddArgument("BLTChannelSoundingDeviceRoleConfig", &mComplex_BLTChannelSoundingDeviceRoleConfig);
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        AddArgument("FrequencyBand", 0, UINT16_MAX, &mRequest.frequencyBand);
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        AddArgument("Bandwidth", 0, UINT32_MAX, &mRequest.bandwidth);
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        AddArgument("SecurityMode", 0, UINT8_MAX, &mRequest.securityMode);
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        AddArgument("Trigger", &mComplex_Trigger);
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        AddArgument("ReportingCondition", &mComplex_ReportingCondition);
+#endif // MTR_ENABLE_PROVISIONAL
+        ClusterCommand::AddArguments();
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId commandId = chip::app::Clusters::ProximityRanging::Commands::StartRangingRequest::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") command (0x%08" PRIX32 ") on endpoint %u", clusterId, commandId, endpointId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRProximityRangingClusterStartRangingRequestParams alloc] init];
+        params.timedInvokeTimeoutMs = mTimedInteractionTimeoutMs.HasValue() ? [NSNumber numberWithUnsignedShort:mTimedInteractionTimeoutMs.Value()] : nil;
+#if MTR_ENABLE_PROVISIONAL
+        params.technology = [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.technology)];
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        if (mRequest.wiFiRangingDeviceRoleConfig.HasValue()) {
+            params.wiFiRangingDeviceRoleConfig = [MTRProximityRangingClusterWiFiRangingDeviceRoleConfigStruct new];
+            params.wiFiRangingDeviceRoleConfig.role = [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.wiFiRangingDeviceRoleConfig.Value().role)];
+            params.wiFiRangingDeviceRoleConfig.peerWiFiDevIK = [NSData dataWithBytes:mRequest.wiFiRangingDeviceRoleConfig.Value().peerWiFiDevIK.data() length:mRequest.wiFiRangingDeviceRoleConfig.Value().peerWiFiDevIK.size()];
+            if (mRequest.wiFiRangingDeviceRoleConfig.Value().pmk.HasValue()) {
+                params.wiFiRangingDeviceRoleConfig.pmk = [NSData dataWithBytes:mRequest.wiFiRangingDeviceRoleConfig.Value().pmk.Value().data() length:mRequest.wiFiRangingDeviceRoleConfig.Value().pmk.Value().size()];
+            } else {
+                params.wiFiRangingDeviceRoleConfig.pmk = nil;
+            }
+        } else {
+            params.wiFiRangingDeviceRoleConfig = nil;
+        }
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        if (mRequest.BLERangingDeviceRoleConfig.HasValue()) {
+            params.bleRangingDeviceRoleConfig = [MTRProximityRangingClusterBLERangingDeviceRoleConfigStruct new];
+            params.bleRangingDeviceRoleConfig.role = [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.BLERangingDeviceRoleConfig.Value().role)];
+            params.bleRangingDeviceRoleConfig.peerBLEDeviceID = [NSNumber numberWithUnsignedLongLong:mRequest.BLERangingDeviceRoleConfig.Value().peerBLEDeviceID];
+        } else {
+            params.bleRangingDeviceRoleConfig = nil;
+        }
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        if (mRequest.BLTChannelSoundingDeviceRoleConfig.HasValue()) {
+            params.bltChannelSoundingDeviceRoleConfig = [MTRProximityRangingClusterBLTChannelSoundingDeviceRoleConfigStruct new];
+            params.bltChannelSoundingDeviceRoleConfig.role = [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.BLTChannelSoundingDeviceRoleConfig.Value().role)];
+            params.bltChannelSoundingDeviceRoleConfig.peerBLTDevIK = [NSData dataWithBytes:mRequest.BLTChannelSoundingDeviceRoleConfig.Value().peerBLTDevIK.data() length:mRequest.BLTChannelSoundingDeviceRoleConfig.Value().peerBLTDevIK.size()];
+            if (mRequest.BLTChannelSoundingDeviceRoleConfig.Value().BLTCSMode.HasValue()) {
+                params.bltChannelSoundingDeviceRoleConfig.bltcsMode = [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.BLTChannelSoundingDeviceRoleConfig.Value().BLTCSMode.Value())];
+            } else {
+                params.bltChannelSoundingDeviceRoleConfig.bltcsMode = nil;
+            }
+            if (mRequest.BLTChannelSoundingDeviceRoleConfig.Value().BLTCSSecurityLevel.HasValue()) {
+                params.bltChannelSoundingDeviceRoleConfig.bltcsSecurityLevel = [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.BLTChannelSoundingDeviceRoleConfig.Value().BLTCSSecurityLevel.Value())];
+            } else {
+                params.bltChannelSoundingDeviceRoleConfig.bltcsSecurityLevel = nil;
+            }
+            if (mRequest.BLTChannelSoundingDeviceRoleConfig.Value().ltk.HasValue()) {
+                params.bltChannelSoundingDeviceRoleConfig.ltk = [NSData dataWithBytes:mRequest.BLTChannelSoundingDeviceRoleConfig.Value().ltk.Value().data() length:mRequest.BLTChannelSoundingDeviceRoleConfig.Value().ltk.Value().size()];
+            } else {
+                params.bltChannelSoundingDeviceRoleConfig.ltk = nil;
+            }
+        } else {
+            params.bltChannelSoundingDeviceRoleConfig = nil;
+        }
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        if (mRequest.frequencyBand.HasValue()) {
+            params.frequencyBand = [NSNumber numberWithUnsignedShort:mRequest.frequencyBand.Value().Raw()];
+        } else {
+            params.frequencyBand = nil;
+        }
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        if (mRequest.bandwidth.HasValue()) {
+            params.bandwidth = [NSNumber numberWithUnsignedInt:mRequest.bandwidth.Value().Raw()];
+        } else {
+            params.bandwidth = nil;
+        }
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        params.securityMode = [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.securityMode)];
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        params.trigger = [MTRProximityRangingClusterRangingTriggerConditionStruct new];
+        params.trigger.startTime = [NSNumber numberWithUnsignedInt:mRequest.trigger.startTime];
+        params.trigger.endTime = [NSNumber numberWithUnsignedInt:mRequest.trigger.endTime];
+        if (mRequest.trigger.rangingInstanceInterval.HasValue()) {
+            params.trigger.rangingInstanceInterval = [NSNumber numberWithUnsignedInt:mRequest.trigger.rangingInstanceInterval.Value()];
+        } else {
+            params.trigger.rangingInstanceInterval = nil;
+        }
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        if (mRequest.reportingCondition.HasValue()) {
+            params.reportingCondition = [MTRProximityRangingClusterReportingConditionStruct new];
+            if (mRequest.reportingCondition.Value().minDistanceCondition.HasValue()) {
+                params.reportingCondition.minDistanceCondition = [NSNumber numberWithUnsignedShort:mRequest.reportingCondition.Value().minDistanceCondition.Value()];
+            } else {
+                params.reportingCondition.minDistanceCondition = nil;
+            }
+            if (mRequest.reportingCondition.Value().maxDistanceCondition.HasValue()) {
+                params.reportingCondition.maxDistanceCondition = [NSNumber numberWithUnsignedShort:mRequest.reportingCondition.Value().maxDistanceCondition.Value()];
+            } else {
+                params.reportingCondition.maxDistanceCondition = nil;
+            }
+            if (mRequest.reportingCondition.Value().errorMarginCondition.HasValue()) {
+                params.reportingCondition.errorMarginCondition = [NSNumber numberWithUnsignedShort:mRequest.reportingCondition.Value().errorMarginCondition.Value()];
+            } else {
+                params.reportingCondition.errorMarginCondition = nil;
+            }
+        } else {
+            params.reportingCondition = nil;
+        }
+#endif // MTR_ENABLE_PROVISIONAL
+        uint16_t repeatCount = mRepeatCount.ValueOr(1);
+        uint16_t __block responsesNeeded = repeatCount;
+        while (repeatCount--) {
+            [cluster startRangingRequestWithParams:params completion:
+                    ^(MTRProximityRangingClusterStartRangingResponseParams * _Nullable values, NSError * _Nullable error) {
+                        NSLog(@"Values: %@", values);
+                        if (error == nil) {
+                            constexpr chip::CommandId responseId = chip::app::Clusters::ProximityRanging::Commands::StartRangingResponse::Id;
+                            TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogCommandAsJSON(@(endpointId), @(clusterId), @(responseId), values);
+                        }
+                        responsesNeeded--;
+                        if (error != nil) {
+                            mError = error;
+                            LogNSError("Error", error);
+                            constexpr chip::CommandId responseId = chip::app::Clusters::ProximityRanging::Commands::StartRangingResponse::Id;
+                            TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogCommandErrorAsJSON(@(endpointId), @(clusterId), @(responseId), error);
+                        }
+                        if (responsesNeeded == 0) {
+                            SetCommandExitStatus(mError);
+                        }
+                    }];
+        }
+        return CHIP_NO_ERROR;
+    }
+
+private:
+    chip::app::Clusters::ProximityRanging::Commands::StartRangingRequest::Type mRequest;
+    TypedComplexArgument<chip::Optional<chip::app::Clusters::ProximityRanging::Structs::WiFiRangingDeviceRoleConfigStruct::Type>> mComplex_WiFiRangingDeviceRoleConfig;
+    TypedComplexArgument<chip::Optional<chip::app::Clusters::ProximityRanging::Structs::BLERangingDeviceRoleConfigStruct::Type>> mComplex_BLERangingDeviceRoleConfig;
+    TypedComplexArgument<chip::Optional<chip::app::Clusters::ProximityRanging::Structs::BLTChannelSoundingDeviceRoleConfigStruct::Type>> mComplex_BLTChannelSoundingDeviceRoleConfig;
+    TypedComplexArgument<chip::app::Clusters::ProximityRanging::Structs::RangingTriggerConditionStruct::Type> mComplex_Trigger;
+    TypedComplexArgument<chip::Optional<chip::app::Clusters::ProximityRanging::Structs::ReportingConditionStruct::Type>> mComplex_ReportingCondition;
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+/*
+ * Command StopRangingRequest
+ */
+class ProximityRangingStopRangingRequest : public ClusterCommand {
+public:
+    ProximityRangingStopRangingRequest()
+        : ClusterCommand("stop-ranging-request")
+    {
+#if MTR_ENABLE_PROVISIONAL
+        AddArgument("SessionID", 0, UINT8_MAX, &mRequest.sessionID);
+#endif // MTR_ENABLE_PROVISIONAL
+        ClusterCommand::AddArguments();
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId commandId = chip::app::Clusters::ProximityRanging::Commands::StopRangingRequest::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") command (0x%08" PRIX32 ") on endpoint %u", clusterId, commandId, endpointId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRProximityRangingClusterStopRangingRequestParams alloc] init];
+        params.timedInvokeTimeoutMs = mTimedInteractionTimeoutMs.HasValue() ? [NSNumber numberWithUnsignedShort:mTimedInteractionTimeoutMs.Value()] : nil;
+#if MTR_ENABLE_PROVISIONAL
+        params.sessionID = [NSNumber numberWithUnsignedChar:mRequest.sessionID];
+#endif // MTR_ENABLE_PROVISIONAL
+        uint16_t repeatCount = mRepeatCount.ValueOr(1);
+        uint16_t __block responsesNeeded = repeatCount;
+        while (repeatCount--) {
+            [cluster stopRangingRequestWithParams:params completion:
+                    ^(NSError * _Nullable error) {
+                        responsesNeeded--;
+                        if (error != nil) {
+                            mError = error;
+                            LogNSError("Error", error);
+                            TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogCommandErrorAsJSON(@(endpointId), @(clusterId), @(commandId), error);
+                        }
+                        if (responsesNeeded == 0) {
+                            SetCommandExitStatus(mError);
+                        }
+                    }];
+        }
+        return CHIP_NO_ERROR;
+    }
+
+private:
+    chip::app::Clusters::ProximityRanging::Commands::StopRangingRequest::Type mRequest;
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute RangingCapabilities
+ */
+class ReadProximityRangingRangingCapabilities : public ReadAttribute {
+public:
+    ReadProximityRangingRangingCapabilities()
+        : ReadAttribute("ranging-capabilities")
+    {
+    }
+
+    ~ReadProximityRangingRangingCapabilities()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::ProximityRanging::Attributes::RangingCapabilities::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeRangingCapabilitiesWithCompletion:^(NSArray * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"ProximityRanging.RangingCapabilities response %@", [value description]);
+            if (error == nil) {
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("ProximityRanging RangingCapabilities read Error", error);
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeProximityRangingRangingCapabilities : public SubscribeAttribute {
+public:
+    SubscribeAttributeProximityRangingRangingCapabilities()
+        : SubscribeAttribute("ranging-capabilities")
+    {
+    }
+
+    ~SubscribeAttributeProximityRangingRangingCapabilities()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::ProximityRanging::Attributes::RangingCapabilities::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeRangingCapabilitiesWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSArray * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"ProximityRanging.RangingCapabilities response %@", [value description]);
+                if (error == nil) {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute WiFiDevIK
+ */
+class ReadProximityRangingWiFiDevIK : public ReadAttribute {
+public:
+    ReadProximityRangingWiFiDevIK()
+        : ReadAttribute("wi-fi-dev-ik")
+    {
+    }
+
+    ~ReadProximityRangingWiFiDevIK()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::ProximityRanging::Attributes::WiFiDevIK::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeWiFiDevIKWithCompletion:^(NSData * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"ProximityRanging.WiFiDevIK response %@", [value description]);
+            if (error == nil) {
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("ProximityRanging WiFiDevIK read Error", error);
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeProximityRangingWiFiDevIK : public SubscribeAttribute {
+public:
+    SubscribeAttributeProximityRangingWiFiDevIK()
+        : SubscribeAttribute("wi-fi-dev-ik")
+    {
+    }
+
+    ~SubscribeAttributeProximityRangingWiFiDevIK()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::ProximityRanging::Attributes::WiFiDevIK::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeWiFiDevIKWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSData * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"ProximityRanging.WiFiDevIK response %@", [value description]);
+                if (error == nil) {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute BLEDeviceID
+ */
+class ReadProximityRangingBLEDeviceID : public ReadAttribute {
+public:
+    ReadProximityRangingBLEDeviceID()
+        : ReadAttribute("bledevice-id")
+    {
+    }
+
+    ~ReadProximityRangingBLEDeviceID()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::ProximityRanging::Attributes::BLEDeviceID::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeBLEDeviceIDWithCompletion:^(NSNumber * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"ProximityRanging.BLEDeviceID response %@", [value description]);
+            if (error == nil) {
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("ProximityRanging BLEDeviceID read Error", error);
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeProximityRangingBLEDeviceID : public SubscribeAttribute {
+public:
+    SubscribeAttributeProximityRangingBLEDeviceID()
+        : SubscribeAttribute("bledevice-id")
+    {
+    }
+
+    ~SubscribeAttributeProximityRangingBLEDeviceID()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::ProximityRanging::Attributes::BLEDeviceID::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeBLEDeviceIDWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSNumber * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"ProximityRanging.BLEDeviceID response %@", [value description]);
+                if (error == nil) {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute BLTDevIK
+ */
+class ReadProximityRangingBLTDevIK : public ReadAttribute {
+public:
+    ReadProximityRangingBLTDevIK()
+        : ReadAttribute("bltdev-ik")
+    {
+    }
+
+    ~ReadProximityRangingBLTDevIK()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::ProximityRanging::Attributes::BLTDevIK::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeBLTDevIKWithCompletion:^(NSData * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"ProximityRanging.BLTDevIK response %@", [value description]);
+            if (error == nil) {
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("ProximityRanging BLTDevIK read Error", error);
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeProximityRangingBLTDevIK : public SubscribeAttribute {
+public:
+    SubscribeAttributeProximityRangingBLTDevIK()
+        : SubscribeAttribute("bltdev-ik")
+    {
+    }
+
+    ~SubscribeAttributeProximityRangingBLTDevIK()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::ProximityRanging::Attributes::BLTDevIK::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeBLTDevIKWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSData * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"ProximityRanging.BLTDevIK response %@", [value description]);
+                if (error == nil) {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute BLTCSSecurityLevel
+ */
+class ReadProximityRangingBLTCSSecurityLevel : public ReadAttribute {
+public:
+    ReadProximityRangingBLTCSSecurityLevel()
+        : ReadAttribute("bltcssecurity-level")
+    {
+    }
+
+    ~ReadProximityRangingBLTCSSecurityLevel()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::ProximityRanging::Attributes::BLTCSSecurityLevel::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeBLTCSSecurityLevelWithCompletion:^(NSNumber * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"ProximityRanging.BLTCSSecurityLevel response %@", [value description]);
+            if (error == nil) {
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("ProximityRanging BLTCSSecurityLevel read Error", error);
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeProximityRangingBLTCSSecurityLevel : public SubscribeAttribute {
+public:
+    SubscribeAttributeProximityRangingBLTCSSecurityLevel()
+        : SubscribeAttribute("bltcssecurity-level")
+    {
+    }
+
+    ~SubscribeAttributeProximityRangingBLTCSSecurityLevel()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::ProximityRanging::Attributes::BLTCSSecurityLevel::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeBLTCSSecurityLevelWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSNumber * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"ProximityRanging.BLTCSSecurityLevel response %@", [value description]);
+                if (error == nil) {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute BLTCSModeCapability
+ */
+class ReadProximityRangingBLTCSModeCapability : public ReadAttribute {
+public:
+    ReadProximityRangingBLTCSModeCapability()
+        : ReadAttribute("bltcsmode-capability")
+    {
+    }
+
+    ~ReadProximityRangingBLTCSModeCapability()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::ProximityRanging::Attributes::BLTCSModeCapability::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeBLTCSModeCapabilityWithCompletion:^(NSNumber * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"ProximityRanging.BLTCSModeCapability response %@", [value description]);
+            if (error == nil) {
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("ProximityRanging BLTCSModeCapability read Error", error);
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeProximityRangingBLTCSModeCapability : public SubscribeAttribute {
+public:
+    SubscribeAttributeProximityRangingBLTCSModeCapability()
+        : SubscribeAttribute("bltcsmode-capability")
+    {
+    }
+
+    ~SubscribeAttributeProximityRangingBLTCSModeCapability()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::ProximityRanging::Attributes::BLTCSModeCapability::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeBLTCSModeCapabilityWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSNumber * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"ProximityRanging.BLTCSModeCapability response %@", [value description]);
+                if (error == nil) {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute SessionIDList
+ */
+class ReadProximityRangingSessionIDList : public ReadAttribute {
+public:
+    ReadProximityRangingSessionIDList()
+        : ReadAttribute("session-idlist")
+    {
+    }
+
+    ~ReadProximityRangingSessionIDList()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::ProximityRanging::Attributes::SessionIDList::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeSessionIDListWithCompletion:^(NSArray * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"ProximityRanging.SessionIDList response %@", [value description]);
+            if (error == nil) {
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("ProximityRanging SessionIDList read Error", error);
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeProximityRangingSessionIDList : public SubscribeAttribute {
+public:
+    SubscribeAttributeProximityRangingSessionIDList()
+        : SubscribeAttribute("session-idlist")
+    {
+    }
+
+    ~SubscribeAttributeProximityRangingSessionIDList()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::ProximityRanging::Attributes::SessionIDList::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeSessionIDListWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSArray * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"ProximityRanging.SessionIDList response %@", [value description]);
+                if (error == nil) {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute GeneratedCommandList
+ */
+class ReadProximityRangingGeneratedCommandList : public ReadAttribute {
+public:
+    ReadProximityRangingGeneratedCommandList()
+        : ReadAttribute("generated-command-list")
+    {
+    }
+
+    ~ReadProximityRangingGeneratedCommandList()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::ProximityRanging::Attributes::GeneratedCommandList::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeGeneratedCommandListWithCompletion:^(NSArray * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"ProximityRanging.GeneratedCommandList response %@", [value description]);
+            if (error == nil) {
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("ProximityRanging GeneratedCommandList read Error", error);
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeProximityRangingGeneratedCommandList : public SubscribeAttribute {
+public:
+    SubscribeAttributeProximityRangingGeneratedCommandList()
+        : SubscribeAttribute("generated-command-list")
+    {
+    }
+
+    ~SubscribeAttributeProximityRangingGeneratedCommandList()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::ProximityRanging::Attributes::GeneratedCommandList::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeGeneratedCommandListWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSArray * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"ProximityRanging.GeneratedCommandList response %@", [value description]);
+                if (error == nil) {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute AcceptedCommandList
+ */
+class ReadProximityRangingAcceptedCommandList : public ReadAttribute {
+public:
+    ReadProximityRangingAcceptedCommandList()
+        : ReadAttribute("accepted-command-list")
+    {
+    }
+
+    ~ReadProximityRangingAcceptedCommandList()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::ProximityRanging::Attributes::AcceptedCommandList::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeAcceptedCommandListWithCompletion:^(NSArray * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"ProximityRanging.AcceptedCommandList response %@", [value description]);
+            if (error == nil) {
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("ProximityRanging AcceptedCommandList read Error", error);
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeProximityRangingAcceptedCommandList : public SubscribeAttribute {
+public:
+    SubscribeAttributeProximityRangingAcceptedCommandList()
+        : SubscribeAttribute("accepted-command-list")
+    {
+    }
+
+    ~SubscribeAttributeProximityRangingAcceptedCommandList()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::ProximityRanging::Attributes::AcceptedCommandList::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeAcceptedCommandListWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSArray * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"ProximityRanging.AcceptedCommandList response %@", [value description]);
+                if (error == nil) {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute AttributeList
+ */
+class ReadProximityRangingAttributeList : public ReadAttribute {
+public:
+    ReadProximityRangingAttributeList()
+        : ReadAttribute("attribute-list")
+    {
+    }
+
+    ~ReadProximityRangingAttributeList()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::ProximityRanging::Attributes::AttributeList::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeAttributeListWithCompletion:^(NSArray * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"ProximityRanging.AttributeList response %@", [value description]);
+            if (error == nil) {
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("ProximityRanging AttributeList read Error", error);
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeProximityRangingAttributeList : public SubscribeAttribute {
+public:
+    SubscribeAttributeProximityRangingAttributeList()
+        : SubscribeAttribute("attribute-list")
+    {
+    }
+
+    ~SubscribeAttributeProximityRangingAttributeList()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::ProximityRanging::Attributes::AttributeList::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeAttributeListWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSArray * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"ProximityRanging.AttributeList response %@", [value description]);
+                if (error == nil) {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute FeatureMap
+ */
+class ReadProximityRangingFeatureMap : public ReadAttribute {
+public:
+    ReadProximityRangingFeatureMap()
+        : ReadAttribute("feature-map")
+    {
+    }
+
+    ~ReadProximityRangingFeatureMap()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::ProximityRanging::Attributes::FeatureMap::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeFeatureMapWithCompletion:^(NSNumber * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"ProximityRanging.FeatureMap response %@", [value description]);
+            if (error == nil) {
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("ProximityRanging FeatureMap read Error", error);
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeProximityRangingFeatureMap : public SubscribeAttribute {
+public:
+    SubscribeAttributeProximityRangingFeatureMap()
+        : SubscribeAttribute("feature-map")
+    {
+    }
+
+    ~SubscribeAttributeProximityRangingFeatureMap()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::ProximityRanging::Attributes::FeatureMap::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeFeatureMapWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSNumber * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"ProximityRanging.FeatureMap response %@", [value description]);
+                if (error == nil) {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+
+/*
+ * Attribute ClusterRevision
+ */
+class ReadProximityRangingClusterRevision : public ReadAttribute {
+public:
+    ReadProximityRangingClusterRevision()
+        : ReadAttribute("cluster-revision")
+    {
+    }
+
+    ~ReadProximityRangingClusterRevision()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::AttributeId attributeId = chip::app::Clusters::ProximityRanging::Attributes::ClusterRevision::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReadAttribute (0x%08" PRIX32 ") on endpoint %u", endpointId, clusterId, attributeId);
+
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        [cluster readAttributeClusterRevisionWithCompletion:^(NSNumber * _Nullable value, NSError * _Nullable error) {
+            NSLog(@"ProximityRanging.ClusterRevision response %@", [value description]);
+            if (error == nil) {
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+            } else {
+                LogNSError("ProximityRanging ClusterRevision read Error", error);
+                TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+            }
+            SetCommandExitStatus(error);
+        }];
+        return CHIP_NO_ERROR;
+    }
+};
+
+class SubscribeAttributeProximityRangingClusterRevision : public SubscribeAttribute {
+public:
+    SubscribeAttributeProximityRangingClusterRevision()
+        : SubscribeAttribute("cluster-revision")
+    {
+    }
+
+    ~SubscribeAttributeProximityRangingClusterRevision()
+    {
+    }
+
+    CHIP_ERROR SendCommand(MTRBaseDevice * device, chip::EndpointId endpointId) override
+    {
+        constexpr chip::ClusterId clusterId = chip::app::Clusters::ProximityRanging::Id;
+        constexpr chip::CommandId attributeId = chip::app::Clusters::ProximityRanging::Attributes::ClusterRevision::Id;
+
+        ChipLogProgress(chipTool, "Sending cluster (0x%08" PRIX32 ") ReportAttribute (0x%08" PRIX32 ") on endpoint %u", clusterId, attributeId, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+        __auto_type * cluster = [[MTRBaseClusterProximityRanging alloc] initWithDevice:device endpointID:@(endpointId) queue:callbackQueue];
+        __auto_type * params = [[MTRSubscribeParams alloc] initWithMinInterval:@(mMinInterval) maxInterval:@(mMaxInterval)];
+        if (mKeepSubscriptions.HasValue()) {
+            params.replaceExistingSubscriptions = !mKeepSubscriptions.Value();
+        }
+        if (mFabricFiltered.HasValue()) {
+            params.filterByFabric = mFabricFiltered.Value();
+        }
+        if (mAutoResubscribe.HasValue()) {
+            params.resubscribeAutomatically = mAutoResubscribe.Value();
+        }
+        [cluster subscribeAttributeClusterRevisionWithParams:params
+            subscriptionEstablished:^() { mSubscriptionEstablished = YES; }
+            reportHandler:^(NSNumber * _Nullable value, NSError * _Nullable error) {
+                NSLog(@"ProximityRanging.ClusterRevision response %@", [value description]);
+                if (error == nil) {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeAsJSON(@(endpointId), @(clusterId), @(attributeId), value);
+                } else {
+                    TEMPORARY_RETURN_IGNORED RemoteDataModelLogger::LogAttributeErrorAsJSON(@(endpointId), @(clusterId), @(attributeId), error);
+                }
+                SetCommandExitStatus(error);
+            }];
+
+        return CHIP_NO_ERROR;
+    }
+};
+
+#endif // MTR_ENABLE_PROVISIONAL
+#endif // MTR_ENABLE_PROVISIONAL
 /*----------------------------------------------------------------------------*\
 | Cluster WiFiNetworkManagement                                       | 0x0451 |
 |------------------------------------------------------------------------------|
@@ -202479,6 +203771,79 @@ void registerClusterAmbientContextSensing(Commands & commands)
     commands.RegisterCluster(clusterName, clusterCommands);
 #endif // MTR_ENABLE_PROVISIONAL
 }
+void registerClusterProximityRanging(Commands & commands)
+{
+#if MTR_ENABLE_PROVISIONAL
+    using namespace chip::app::Clusters::ProximityRanging;
+
+    const char * clusterName = "ProximityRanging";
+
+    commands_list clusterCommands = {
+        make_unique<ClusterCommand>(Id), //
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ProximityRangingStartRangingRequest>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ProximityRangingStopRangingRequest>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+        make_unique<ReadAttribute>(Id), //
+        make_unique<WriteAttribute>(Id), //
+        make_unique<SubscribeAttribute>(Id), //
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadProximityRangingRangingCapabilities>(), //
+        make_unique<SubscribeAttributeProximityRangingRangingCapabilities>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadProximityRangingWiFiDevIK>(), //
+        make_unique<SubscribeAttributeProximityRangingWiFiDevIK>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadProximityRangingBLEDeviceID>(), //
+        make_unique<SubscribeAttributeProximityRangingBLEDeviceID>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadProximityRangingBLTDevIK>(), //
+        make_unique<SubscribeAttributeProximityRangingBLTDevIK>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadProximityRangingBLTCSSecurityLevel>(), //
+        make_unique<SubscribeAttributeProximityRangingBLTCSSecurityLevel>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadProximityRangingBLTCSModeCapability>(), //
+        make_unique<SubscribeAttributeProximityRangingBLTCSModeCapability>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadProximityRangingSessionIDList>(), //
+        make_unique<SubscribeAttributeProximityRangingSessionIDList>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadProximityRangingGeneratedCommandList>(), //
+        make_unique<SubscribeAttributeProximityRangingGeneratedCommandList>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadProximityRangingAcceptedCommandList>(), //
+        make_unique<SubscribeAttributeProximityRangingAcceptedCommandList>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadProximityRangingAttributeList>(), //
+        make_unique<SubscribeAttributeProximityRangingAttributeList>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadProximityRangingFeatureMap>(), //
+        make_unique<SubscribeAttributeProximityRangingFeatureMap>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+#if MTR_ENABLE_PROVISIONAL
+        make_unique<ReadProximityRangingClusterRevision>(), //
+        make_unique<SubscribeAttributeProximityRangingClusterRevision>(), //
+#endif // MTR_ENABLE_PROVISIONAL
+        make_unique<ReadEvent>(Id), //
+        make_unique<SubscribeEvent>(Id), //
+    };
+
+    commands.RegisterCluster(clusterName, clusterCommands);
+#endif // MTR_ENABLE_PROVISIONAL
+}
 void registerClusterWiFiNetworkManagement(Commands & commands)
 {
     using namespace chip::app::Clusters::WiFiNetworkManagement;
@@ -205001,6 +206366,7 @@ void registerClusters(Commands & commands)
     registerClusterRadonConcentrationMeasurement(commands);
     registerClusterSoilMeasurement(commands);
     registerClusterAmbientContextSensing(commands);
+    registerClusterProximityRanging(commands);
     registerClusterWiFiNetworkManagement(commands);
     registerClusterThreadBorderRouterManagement(commands);
     registerClusterThreadNetworkDirectory(commands);
