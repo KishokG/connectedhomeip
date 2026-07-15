@@ -15,7 +15,6 @@
 import logging
 from dataclasses import dataclass
 from io import StringIO
-from typing import Optional
 
 import yaml
 
@@ -27,10 +26,10 @@ class Metadata:
     py_script_path: str
     run: str
     app: str = ""
-    app_args: Optional[str] = None
-    app_ready_pattern: Optional[str] = None
-    app_stdin_pipe: Optional[str] = None
-    script_args: Optional[str] = None
+    app_args: str | None = None
+    app_ready_pattern: str | None = None
+    app_stdin_pipe: str | None = None
+    script_args: str | None = None
     factory_reset: bool = False
     factory_reset_app_only: bool = False
     script_gdb: bool = False
@@ -77,7 +76,7 @@ def extract_runs_args(py_script_path: str) -> dict[str, dict[str, str]]:
                 runs_arg_lines[run]['run'] = run
                 runs_arg_lines[run].update(args)
         except yaml.YAMLError as e:
-            LOGGER.error(f"Failed to parse CI arguments YAML: {e}")
+            LOGGER.error("Failed to parse CI arguments YAML: %s", e)
 
     return runs_arg_lines
 
