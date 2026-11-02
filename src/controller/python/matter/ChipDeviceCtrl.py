@@ -59,7 +59,7 @@ from .exceptions import ChipStackError
 from .interaction_model import SessionParameters, SessionParametersStruct
 from .native import PyChipError
 
-__all__ = ["ChipDeviceController", "CommissioningParameters",
+__all__ = ["ChipDeviceController", "CommissioningParameters", "CommissioningStage",
            "AttributeReadRequest", "AttributeReadRequestList", "SubscriptionTargetList"]
 
 # Type aliases for ReadAttribute method to improve type safety
@@ -148,6 +148,61 @@ class TransportPayloadCapability(ctypes.c_int):
     MRP_PAYLOAD = 0
     LARGE_PAYLOAD = 1
     MRP_OR_TCP_PAYLOAD = 2
+
+
+class CommissioningStage(enum.IntEnum):
+    '''Mirrors the C++ CommissioningStage enum in src/controller/CommissioningDelegate.h.
+
+    Keep the two in sync. Member names match the strings returned by StageToString(), and
+    src/python_testing/test_testing/TestCommissioningStage.py checks this mapping against
+    the native library.
+    '''
+    Error = 0
+    SecurePairing = enum.auto()
+    ReadCommissioningInfo = enum.auto()
+    ArmFailSafe = enum.auto()
+    ConfigRegulatory = enum.auto()
+    ConfigureUTCTime = enum.auto()
+    ConfigureTimeZone = enum.auto()
+    ConfigureDSTOffset = enum.auto()
+    ConfigureDefaultNTP = enum.auto()
+    SendPAICertificateRequest = enum.auto()
+    SendDACCertificateRequest = enum.auto()
+    SendAttestationRequest = enum.auto()
+    AttestationVerification = enum.auto()
+    AttestationRevocationCheck = enum.auto()
+    JCMTrustVerification = enum.auto()
+    SendOpCertSigningRequest = enum.auto()
+    ValidateCSR = enum.auto()
+    GenerateNOCChain = enum.auto()
+    SendTrustedRootCert = enum.auto()
+    SendNOC = enum.auto()
+    ConfigureTrustedTimeSource = enum.auto()
+    ICDGetRegistrationInfo = enum.auto()
+    ICDRegistration = enum.auto()
+    WiFiNetworkSetup = enum.auto()
+    PDCRegisterClientIdentity = enum.auto()
+    ThreadNetworkSetup = enum.auto()
+    FailsafeBeforeWiFiEnable = enum.auto()
+    FailsafeBeforeThreadEnable = enum.auto()
+    WiFiNetworkEnable = enum.auto()
+    ThreadNetworkEnable = enum.auto()
+    EvictPreviousCaseSessions = enum.auto()
+    FindOperationalForStayActive = enum.auto()
+    FindOperationalForCommissioningComplete = enum.auto()
+    SendComplete = enum.auto()
+    ICDSendStayActive = enum.auto()
+    ScanNetworks = enum.auto()
+    NeedsNetworkCreds = enum.auto()
+    PrimaryOperationalNetworkFailed = enum.auto()
+    RemoveWiFiNetworkConfig = enum.auto()
+    RemoveThreadNetworkConfig = enum.auto()
+    ConfigureTCAcknowledgments = enum.auto()
+    RequestWiFiCredentials = enum.auto()
+    RequestThreadCredentials = enum.auto()
+    PDCGetNetworkIdentity = enum.auto()
+    UnpoweredPhaseComplete = enum.auto()
+    Cleanup = enum.auto()
 
 
 @dataclass
@@ -1132,8 +1187,8 @@ class ChipDeviceControllerBase:
 
         Args:
             stage (int): The commissioning stage where failure will be simulated.
-                         This corresponds to the enum `CommissioningStage` (e.g. kError, kSecurePairing, etc.). For full details
-                         ref https://github.com/project-chip/connectedhomeip/blob/master/src/controller/CommissioningDelegate.h
+                         Use the `CommissioningStage` enum from this module (e.g. CommissioningStage.SendComplete)
+                         rather than a literal number; stage numbers change as the C++ enum evolves.
 
         Returns:
             bool: True if the failure simulate success, False if not.
@@ -1147,8 +1202,8 @@ class ChipDeviceControllerBase:
 
         Args:
             stage (int): The commissioning stage where failure will be simulated.
-                         This corresponds to the enum `CommissioningStage` (e.g. kError, kSecurePairing, etc.). For full details
-                         ref https://github.com/project-chip/connectedhomeip/blob/master/src/controller/CommissioningDelegate.h
+                         Use the `CommissioningStage` enum from this module (e.g. CommissioningStage.SendComplete)
+                         rather than a literal number; stage numbers change as the C++ enum evolves.
 
         Returns:
             bool: True if the failure simulate success, False if not.
@@ -1162,8 +1217,8 @@ class ChipDeviceControllerBase:
 
         Args:
             stage (int): The commissioning stage after a premature completion is simulated.
-                         This corresponds to the enum `CommissioningStage` (e.g. kError, kSecurePairing, etc.). For full details
-                         ref https://github.com/project-chip/connectedhomeip/blob/master/src/controller/CommissioningDelegate.h
+                         Use the `CommissioningStage` enum from this module (e.g. CommissioningStage.SendComplete)
+                         rather than a literal number; stage numbers change as the C++ enum evolves.
 
         Returns:
             bool: True if the premature complete success, False if not.
@@ -1187,11 +1242,17 @@ class ChipDeviceControllerBase:
         Check the test commissioner stage success.
 
         Args:
-            stage (int): The commissioning to simulate.
+            stage (int): The commissioning stage to check.
+                         Use the `CommissioningStage` enum from this module (e.g. CommissioningStage.SendComplete)
+                         rather than a literal number; stage numbers change as the C++ enum evolves.
 
         Returns:
             bool: True if test commissioner stage success, False if not.
+
+        Raises:
+            ValueError: If `stage` is not a valid `CommissioningStage`.
         '''
+        stage = CommissioningStage(stage)
         return self._ChipStack.Call(
             lambda: self._dmLib.pychip_TestCommissioningStageSuccessful(stage)
         )
@@ -2821,6 +2882,18 @@ class ChipDeviceControllerBase:
                     "pychip_DeviceController_ThreadMeshcopCommission is not available in the loaded CHIP library; "
                     "Thread Meshcop commissioning is disabled.")
 
+            self._dmLib.pychip_DeviceController_CommissionViaProxy.argtypes = [
+                c_void_p,   # devCtrl
+                c_void_p,   # pairingDelegate
+                c_uint64,   # proxyNodeId
+                c_uint64,   # remoteNodeId
+                c_uint16,   # proxySessionId
+                c_uint16,   # proxyEndpoint
+                c_uint16,   # discriminator
+                c_uint32,   # setupPinCode
+            ]
+            self._dmLib.pychip_DeviceController_CommissionViaProxy.restype = PyChipError
+
             self._dmLib.pychip_DeviceController_DiscoverCommissionableNodes.argtypes = [
                 c_void_p, c_uint8, c_char_p]
             self._dmLib.pychip_DeviceController_DiscoverCommissionableNodes.restype = PyChipError
@@ -3534,6 +3607,47 @@ class ChipDeviceController(ChipDeviceControllerBase):
             await self._ChipStack.CallAsync(
                 lambda: self._dmLib.pychip_DeviceController_ThreadMeshcopCommission(
                     self.devCtrl, self.pairingDelegate, nodeId, setupPinCode, discriminator, borderAgentIPAddr.encode("utf-8"), borderAgentPort)
+            )
+
+            return await asyncio.futures.wrap_future(ctx.future)
+
+    async def CommissionViaProxy(self, *, proxyNodeId: int, proxySessionId: int,
+                                 remoteNodeId: int, discriminator: int,
+                                 setupPinCode: int, proxyEndpoint: int = 1) -> int:
+        '''Commission a device through a Commissioning Proxy.
+
+        The proxy CASE session must already exist (proxyNodeId is commissioned
+        to this controller's fabric) and a ProxyConnectRequest must have been
+        sent separately to obtain proxySessionId.
+
+        WiFi credentials must be set via SetWiFiCredentials() before calling
+        this method (same pattern as CommissionOnNetwork).
+
+        The caller owns the proxy session. If the proxy relays a message that
+        does not conform to the Matter Message Format, or one for another
+        session, this method stops using the tunnel, and commissioning fails
+        when its timeout expires. The caller must then terminate the proxy
+        session with a ProxyDisconnectRequest.
+
+        Args:
+            proxyNodeId:    Node ID of the Commissioning Proxy (DUT).
+            proxySessionId: SessionId from the ProxyConnectResponse.
+            remoteNodeId:   Node ID to assign to the commissioned ED.
+            discriminator:  Long discriminator of the ED.
+            setupPinCode:   PASE passcode of the ED.
+            proxyEndpoint:  Endpoint on which the CommissioningProxy cluster is hosted (default 1).
+
+        Returns:
+            Effective Node ID of the commissioned ED.
+        '''
+        self.CheckIsActive()
+
+        async with self._commissioning_context as ctx:
+            self._enablePairingCompleteCallback(True)
+            await self._ChipStack.CallAsync(
+                lambda: self._dmLib.pychip_DeviceController_CommissionViaProxy(
+                    self.devCtrl, self.pairingDelegate,
+                    proxyNodeId, remoteNodeId, proxySessionId, proxyEndpoint, discriminator, setupPinCode)
             )
 
             return await asyncio.futures.wrap_future(ctx.future)

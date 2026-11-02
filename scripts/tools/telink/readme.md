@@ -184,12 +184,12 @@ You can try one of these factory partition FW on developing stage.
 3. Then flash the `factory_data.bin` generated from the generator tool at
    specific address:
 
-    > Note: The factory data partition offset depends on the flash size. For
-    > [2 MB flash](../../../src/platform/telink/tlsr9518adk80d_2m_flash.overlay)
-    > it is `0xff000` and for
-    > [4 MB flash](../../../src/platform/telink/tlsr9518adk80d_4m_flash.overlay)
-    > it is `0x205000`. You can check the `factory_partition` reg in the
-    > corresponding flash overlay for details.
+    > Note: The offset for Matter
+    > [v1.0-branch](https://github.com/telink-semi/tl_zephyr/blob/telink_matter_v1.0-branch/boards/riscv/tlsr9518adk80d/tlsr9518adk80d.dts)
+    > is `0xF4000` and for
+    > [master branch](https://github.com/telink-semi/tl_zephyr/blob/telink_matter/boards/riscv/tlsr9518adk80d/tlsr9518adk80d.dts)
+    > is `0x107000`. You can check the `factory_partition` reg at
+    > `tlsr9518adk80d.dts` for details.
 
     For example, the `factory_data_bin` with serial number
     `aabbccddeeff11223344556677889900`. Here is the expected output in logging:
@@ -211,3 +211,43 @@ You can try one of these factory partition FW on developing stage.
     I: 1017 [SVR]Manual pairing code: [26251356956]
     ...
     ```
+
+## Secure programming (per-device provisioning)
+
+Secure programming uses a different factory-data layout and stores the DAC
+certificate and private key in a separate flash partition. Build the firmware
+with the following options:
+
+-   `CONFIG_CHIP_FACTORY_DATA=y`
+-   `CONFIG_SECURE_PROGRAMMING=y`
+-   `CONFIG_CHIP_FACTORY_DATA_BUILD=n`
+
+Do not use the build-time factory-data generator or merge its regular
+`factory_data.bin` into the secure firmware image. The secure factory-data
+format has an additional six-byte prefix, which the firmware skips before
+parsing the CBOR data.
+
+For **each device**, run `mfg_tool.py` using the usual manufacturing options (as
+in the example above) and also supply:
+
+```shell
+--secure-programming-verification \
+--chip-id 00112233445566770000000000000000
+```
+
+The chip ID above is an **example only**. Replace it with the target device's
+actual 8-byte IEEE address followed by eight zero bytes, encoded as 32 hex
+characters. Use a unique device-specific value and credentials for each device;
+secure generation supports only one device per invocation (`--count 1`).
+
+Program the two generated binary files into the corresponding flash partitions:
+
+| Generated file         | Flash partition         |
+| ---------------------- | ----------------------- |
+| `factory_data_ext.bin` | `factory_partition`     |
+| `dac_cert_key.bin`     | `dac_keypair_partition` |
+
+Determine the partition offsets and sizes from the target board's devicetree. Do
+not program the regular `factory_data.bin` (or `factory_data.hex`) for secure
+programming, and do not include device-specific DAC keys in a shared firmware
+build artifact.

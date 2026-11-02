@@ -1,5 +1,5 @@
 #
-#    Copyright (c) 2024 Project CHIP Authors
+#    Copyright (c) 2024-2026 Project CHIP Authors
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -100,7 +100,14 @@ else()
   unset(USB_CONF_OVERLAY_FILE)
 endif()
 
-if(${CONFIG_COMPRESS_LZMA} MATCHES y)
+set(LOCAL_BOARD_CONF_FILE "${CMAKE_CURRENT_SOURCE_DIR}/boards/${BOARD}.conf")
+if(NOT EXISTS "${LOCAL_BOARD_CONF_FILE}")
+  message(STATUS "${LOCAL_BOARD_CONF_FILE} doesn't exist")
+  unset(LOCAL_BOARD_CONF_FILE)
+endif()
+
+# Check if there is any lzma conf file in CONF_FILE，or check CONFIG_COMPRESS_LZMA
+if(("${CONF_FILE}" MATCHES "lzma") OR (${CONFIG_COMPRESS_LZMA} MATCHES y))
   set(BOOT_CONF_OVERLAY_FILE "${CHIP_ROOT}/config/telink/app/bootloader_compress_lzma.conf")
   set(FLASH_LAYOUT_SUFFIX "_lzma")
 else()
@@ -156,7 +163,7 @@ else()
 endif()
 
 if(NOT CONF_FILE)
-  set(CONF_FILE ${USB_CONF_OVERLAY_FILE} ${MARS_CONF_OVERLAY_FILE} prj.conf ${TFLM_CONF_OVERLAY_FILE} ${ML_CONF_OVERLAY_FILE})
+  set(CONF_FILE ${USB_CONF_OVERLAY_FILE} ${MARS_CONF_OVERLAY_FILE} ${ZEPHYR_VERSION_OVERLAY_FILE} prj.conf ${TFLM_CONF_OVERLAY_FILE} ${ML_CONF_OVERLAY_FILE} ${LOCAL_BOARD_CONF_FILE})
 endif()
 
 # Load NCS/Zephyr build system
